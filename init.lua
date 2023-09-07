@@ -22,6 +22,7 @@ local git = {
   -- Adds git related signs to the gutter, as well as utilities for managing changes
   {
     'lewis6991/gitsigns.nvim',
+    event = "VeryLazy",
     opts = {
       signs = {
         add = { text = '+' },
@@ -30,13 +31,16 @@ local git = {
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
-      on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk,
-          { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
-        vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
-        vim.keymap.set('n', '<leader>ph', require('gitsigns').preview_hunk, { buffer = bufnr, desc = '[P]review [H]unk' })
-      end,
     },
+    keys = function()
+      local gitsigns = require('gitsigns')
+
+      return {
+        { '<leader>gp', function() gitsigns.prev_hunk() end, desc = '[G]o to [P]revious Hunk' },
+        { '<leader>gn', function() gitsigns.next_hunk() end, desc = '[G]o to [N]ext Hunk' },
+        { '<leader>gh', function() gitsigns.preview_hunk() end, desc = 'Preview [H]unk' },
+      }
+    end,
   },
 }
 
@@ -73,6 +77,7 @@ local vim_keymaps = {
       vim.wo.number = true
       vim.wo.signcolumn = 'yes'
       vim.wo.relativenumber = true
+      vim.opt.autochdir = true
     end,
     opts = {
       lazy_nvim = {
@@ -85,17 +90,8 @@ local vim_keymaps = {
         { '[d', vim.diagnostic.goto_prev, description = 'Go to previous diagnostic message', mode = { 'n', 'v' } },
         { ']d', vim.diagnostic.goto_next, description = 'Go to next diagnostic message', mode = { 'n', 'v' } },
 
-        -- { '<leader>?', function() require('telescope.builtin').oldfiles() end, description = '[?] Find recently opened files', mode = { 'n' } },
-        -- { '<leader><Space>', function() require('telescope.builtin').buffers() end, description = '[ ] Find existing buffers', mode = { 'n' } },
-        -- { '<leader>/', function() require('telescope.builtin').current_buffer_fuzzy_find(
-        --     require('telescope.themes').get_dropdown {
-        --       winblend = 10,
-        --       previewer = false,
-        --     }) end,
-        --     description = '[/] Fuzzily search in current buffer' },
-
-        { '<leader>e', vim.diagnostic.open_float, description = 'Open floating diagnostic message', mode = { 'n' } },
-        { '<leader>q', vim.diagnostic.setloclist, description = 'Open diagnostics list', mode = { 'n' } },
+        { '<leader>cm', vim.diagnostic.open_float, description = 'Open floating diagnostic message', mode = { 'n' } },
+        { '<leader>ck', vim.diagnostic.setloclist, description = 'Open diagnostics list', mode = { 'n' } },
       },
       autocmds = {
         {
@@ -135,8 +131,35 @@ local autocompletion = {
     opts = function()
       local cmp = require('cmp')
       local luasnip = require('luasnip')
+      local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+
       require('luasnip.loaders.from_vscode').lazy_load()
       luasnip.config.setup {}
+
+      cmp.event:on(
+        'confirm_done',
+        cmp_autopairs.on_confirm_done()
+      )
+
+      local tabfn = function(fallback)
+        if cmp.visible() then
+          cmp.select_next_item()
+        elseif luasnip.expand_or_locally_jumpable() then
+          luasnip.expand_or_jump()
+        else
+          fallback()
+        end
+      end
+
+      local stabfn = function(fallback)
+        if cmp.visible() then
+          cmp.select_prev_item()
+        elseif luasnip.locally_jumpable(-1) then
+          luasnip.jump(-1)
+        else
+          fallback()
+        end
+      end
 
       return {
         snippet = {
@@ -145,34 +168,18 @@ local autocompletion = {
           end,
         },
         mapping = cmp.mapping.preset.insert {
-          ['<C-n>'] = cmp.mapping.select_next_item(),
-          ['<C-p>'] = cmp.mapping.select_prev_item(),
-          ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-f>'] = cmp.mapping.scroll_docs(4),
-          ['<C-Space>'] = cmp.mapping.complete {},
-          ['<CR>'] = cmp.mapping.confirm {
-            behavior = cmp.ConfirmBehavior.Replace,
-            select = true,
+            ['<C-n>'] = cmp.mapping.select_next_item(),
+            ['<C-p>'] = cmp.mapping.select_prev_item(),
+            ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+            ['<C-f>'] = cmp.mapping.scroll_docs(4),
+            ['<C-Space>'] = cmp.mapping.complete {},
+            ['<CR>'] = cmp.mapping.confirm {
+              behavior = cmp.ConfirmBehavior.Replace,
+              select = true,
+            },
+            ['<Tab>'] = cmp.mapping(tabfn, { 'i', 's' }),
+            ['<S-Tab>'] = cmp.mapping(stabfn, { 'i', 's' }),
           },
-          ['<Tab>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            elseif luasnip.expand_or_locally_jumpable() then
-              luasnip.expand_or_jump()
-            else
-              fallback()
-            end
-          end, { 'i', 's' }),
-          ['<S-Tab>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            elseif luasnip.locally_jumpable(-1) then
-              luasnip.jump(-1)
-            else
-              fallback()
-            end
-          end, { 'i', 's' }),
-        },
         sources = {
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
@@ -201,14 +208,21 @@ local fuzzyfinder = {
       'nvim-lua/plenary.nvim',
       'nvim-telescope/telescope-fzf-native.nvim',
     },
-    keys = {
-      { "<leader>gf", function() require("telescope.builtin").git_files() end,   desc = "Search [G]it [F]iles" },
-      { "<leader>sf", function() require("telescope.builtin").find_files() end,  desc = "[S]earch [F]iles" },
-      { "<leader>sh", function() require("telescope.builtin").help_tags() end,   desc = "[S]earch [H]elp" },
-      { "<leader>sw", function() require("telescope.builtin").grep_string() end, desc = "[S]earch current [W]ord" },
-      { "<leader>sg", function() require("telescope.builtin").live_grep() end,   desc = "[S]earch by [G]rep" },
-      { "<leader>sd", function() require("telescope.builtin").diagnostics() end, desc = "[S]earch [D]iagnostics" },
-    },
+    keys = function()
+      local telescope = require("telescope.builtin")
+
+      return {
+        { "<leader>sf", function() telescope.git_files() end, desc = "[S]earch [G]it Files" },
+        { "<leader>sF", function() telescope.find_files() end, desc = "[S]earch [F]iles" },
+        { "<leader>sh", function() telescope.help_tags() end, desc = "[S]earch [H]elp" },
+        { "<leader>sw", function() telescope.grep_string() end, desc = "[S]earch for current [W]ord" },
+        { "<leader>sg", function() telescope.current_buffer_fuzzy_find() end, desc = "[S]earch with [G]rep" },
+        { "<leader>sG", function() telescope.live_grep() end, desc = "[S]earch [G]rep Globally" },
+        { "<leader>sd", function() telescope.diagnostics() end, desc = "[S]earch [D]iagnostics" },
+
+        { '<leader>bl', function() telescope.buffers() end, desc = '[B]uffer [L]ist' },
+      }
+      end,
     opts = {
       defaults = {
         mappings = {
@@ -232,8 +246,6 @@ local editing = {
   -- Add indentation guides even on blank lines
   {
     'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help indent_blankline.txt`
     opts = {
       char = '┊',
       show_trailing_blankline_indent = false,
@@ -259,13 +271,36 @@ local ui = {
   {
     'stevearc/dressing.nvim',
     opts = {},
-  }
+  },
+
+  {
+    "numToStr/FTerm.nvim",
+    lazy = false,
+    init = function()
+      vim.api.nvim_create_user_command('FTermOpen', require('FTerm').open, { bang = true })
+      vim.api.nvim_create_user_command('FTermClose', require('FTerm').close, { bang = true })
+      vim.api.nvim_create_user_command('FTermExit', require('FTerm').exit, { bang = true })
+      vim.api.nvim_create_user_command('FTermToggle', require('FTerm').toggle, { bang = true })
+    end,
+    opts = {
+      -- auto_close = false,
+    },
+    keys = {
+      { '<C-_>', function() require('FTerm').toggle() end, desc = 'Toggle Terminal', mode = 'n' },
+      { '<C-_>', function() require('FTerm').close() end, desc = 'Close Terminal', mode = 't' },
+    },
+  },
 }
 
 local lsp = {
   {
     'folke/neodev.nvim',
-    opts = true
+    opts = {
+      library = {
+        plugins = { "nvim-dap-ui" },
+        types = true
+      },
+    }
   },
 
   -- Useful status updates for LSP
@@ -273,6 +308,13 @@ local lsp = {
     'j-hui/fidget.nvim',
     tag = 'legacy',
     opts = {}
+  },
+
+  {
+    'jay-babu/mason-nvim-dap.nvim',
+    opts = {
+      automatic_setup = true,
+    }
   },
 
   {
@@ -302,10 +344,6 @@ local lsp = {
 
      { 'K', vim.lsp.buf.hover, 'n', desc = 'Hover Documentation' },
      { '<C-k>', vim.lsp.buf.signature_help, 'n', desc = 'Signature Documentation' },
-     { '<leader>wa', vim.lsp.buf.add_workspace_folder, 'n', desc = '[W]orkspace [A]dd Folder' },
-     { '<leader>ws', function() require('telescope.builtin').lsp_dynamic_workspace_symbols() end, 'n', desc = '[W]orkspace [S]ymbols' },
-     { '<leader>wr', vim.lsp.buf.remove_workspace_folder, 'n', desc = '[W]orkspace [R]emove Folder' },
-     { '<leader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, 'n', desc = '[W]orkspace [L]ist Folders' },
     }
   },
 
@@ -328,14 +366,14 @@ local lsp = {
 
         ["lua_ls"] = function ()
           require("lspconfig").lua_ls.setup {
-                settings = {
-                    Lua = {
-                        diagnostics = {
-                            globals = { "vim" }
-                        }
-                    }
+            settings = {
+              Lua = {
+                diagnostics = {
+                  globals = { "vim" }
                 }
+              }
             }
+          }
         end,
       },
     },
@@ -360,21 +398,46 @@ local code = {
     event = "VeryLazy"
   },
 
+  {
+    'windwp/nvim-autopairs',
+    opts = {}
+  },
+
   -- Highlight, edit, and navigate code
   {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    init = function()
+      local loader = require("lazy.core.loader")
+      loader.disable_rtp_plugin("nvim-treesitter-textobjects")
+      load_textobjects = true
+    end,
+    -- opts = {},
+  },
+
+  {
     'nvim-treesitter/nvim-treesitter',
+    version = false,
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
-      'nvim-treesitter/nvim-treesitter-textobjects',
     },
-    build = ':TSUpdate',
+    build = ":TSUpdate",
+    event = { "BufReadPost", "BufRead", "BufNewFile" },
+    cmd = { "TSUpdateSync" },
+    keys = {
+      { "<c-space>", desc = "Increment selection" },
+      { "<bs>", desc = "Decrement selection", mode = "x" }
+    },
+    ---@param opts TSConfig
     opts = {
-      ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim' },
-
+      ensure_installed = { 'lua', 'luadoc', 'rust', 'tsx', 'javascript', 'jsdoc', 'css', 'html', 'svelte', 'typescript', 'vim', 'c_sharp' },
       auto_install = true,
 
-      highlight = { enable = true },
-      indent = { enable = true },
+      highlight = {
+        enable = true
+      },
+      indent = {
+        enable = true
+      },
       incremental_selection = {
         enable = true,
         keymaps = {
@@ -387,9 +450,8 @@ local code = {
       textobjects = {
         select = {
           enable = true,
-          lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+          lookahead = true,
           keymaps = {
-            -- You can use the capture groups defined in textobjects.scm
             ['aa'] = '@parameter.outer',
             ['ia'] = '@parameter.inner',
             ['af'] = '@function.outer',
@@ -427,19 +489,78 @@ local code = {
             ['<leader>A'] = '@parameter.inner',
           },
         },
-      }
-    },
-  },
+      },
+      ---@param opts TSConfig
+      config = function(_, opts)
+        if type(opts.ensure_installed) == "table" then
+          ---@type table<string, boolean>
+          local added = {}
+          opts.ensure_installed = vim.tbl_filter(function(lang)
+            if added[lang] then
+              return false
+            end
+            added[lang] = true
+            return true
+          end, opts.ensure_installed)
+        end
+        require("nvim-treesitter.configs").setup(opts)
 
-  {
-    'mfussenegger/nvim-dap'
+        if load_textobjects then
+          if opts.textobjects then
+            for _, mod in ipairs({ "move", "select", "swap", "lsp_interop" }) do
+              if opts.textobjects[mod] and opts.textobjects[mod].enable then
+                local Loader = require("lazy.core.loader")
+                Loader.disabled_rtp_plugins["nvim-treesitter-textobjects"] = nil
+                local plugin = require("lazy.core.config").plugins["nvim-treesitter-textobjects"]
+                require("lazy.core.loader").source_runtime(plugin.dir, "plugin")
+                break
+              end
+            end
+          end
+        end
+      end,
+    },
   },
 
   {
     'rcarriga/nvim-dap-ui',
+    opts = {
+      icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
+      controls = {
+        icons = {
+          pause = '⏸',
+          play = '▶',
+          step_into = '⏎',
+          step_over = '⏭',
+          step_out = '⏮',
+          step_back = 'b',
+          run_last = '▶▶',
+          terminate = '⏹',
+          disconnect = '⏏',
+        },
+      },
+    }
+  },
+
+  {
+    'mfussenegger/nvim-dap',
     dependencies = {
-      'mfussenegger/nvim-dap'
+      'rcarriga/nvim-dap-ui',
+      'williamboman/mason.nvim',
+      'jay-babu/mason-nvim-dap.nvim',
     },
+    keys = function()
+      local dap = require('dap')
+
+      return {
+        { '<F5>', function() dap.continue() end, desc = 'Debug: Start/Continue' },
+        { '<F1>', function() dap.step_into() end, desc = 'Debug: Step Into' },
+        { '<F2>', function() dap.step_over() end, desc = 'Debug: Step Over' },
+        { '<F3>', function() dap.step_out() end, desc = 'Debug: Step Out' },
+        { '<leader>cb', function() dap.toggle_breakpoint() end, desc = 'Debug: Toggle [B]reakpoint' },
+        { '<leader>cB', function() dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')() end, desc = 'Debug: Set [B]reakpoint with Condition' },
+      }
+    end,
   },
 }
 
@@ -470,3 +591,4 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+--
