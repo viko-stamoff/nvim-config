@@ -22,7 +22,7 @@ local git = {
   -- Adds git related signs to the gutter, as well as utilities for managing changes
   {
     'lewis6991/gitsigns.nvim',
-    event = "VeryLazy",
+    event = 'VeryLazy',
     opts = {
       signs = {
         add = { text = '+' },
@@ -85,8 +85,8 @@ local vim_keymaps = {
       },
       keymaps = {
         { '<Space>', '<Nop>', opts = { silent = true }, mode = { 'n', 'v' } },
-        { 'k', "v:count == 0 ? 'gk' : 'k'", opts = { expr = true, silent = true }, mode = { 'n', 'v' } },
-        { 'j', "v:count == 0 ? 'gj' : 'j'", opts = { expr = true, silent = true }, mode = { 'n', 'v' } },
+        { 'k', 'v:count == 0 ? "gk" : "k"', opts = { expr = true, silent = true }, mode = { 'n', 'v' } },
+        { 'j', 'v:count == 0 ? "gj" : "j"', opts = { expr = true, silent = true }, mode = { 'n', 'v' } },
         { '[d', vim.diagnostic.goto_prev, description = 'Go to previous diagnostic message', mode = { 'n', 'v' } },
         { ']d', vim.diagnostic.goto_next, description = 'Go to next diagnostic message', mode = { 'n', 'v' } },
 
@@ -209,16 +209,16 @@ local fuzzyfinder = {
       'nvim-telescope/telescope-fzf-native.nvim',
     },
     keys = function()
-      local telescope = require("telescope.builtin")
+      local telescope = require('telescope.builtin')
 
       return {
-        { "<leader>sf", function() telescope.git_files() end, desc = "[S]earch [G]it Files" },
-        { "<leader>sF", function() telescope.find_files() end, desc = "[S]earch [F]iles" },
-        { "<leader>sh", function() telescope.help_tags() end, desc = "[S]earch [H]elp" },
-        { "<leader>sw", function() telescope.grep_string() end, desc = "[S]earch for current [W]ord" },
-        { "<leader>sg", function() telescope.current_buffer_fuzzy_find() end, desc = "[S]earch with [G]rep" },
-        { "<leader>sG", function() telescope.live_grep() end, desc = "[S]earch [G]rep Globally" },
-        { "<leader>sd", function() telescope.diagnostics() end, desc = "[S]earch [D]iagnostics" },
+        { '<leader>sf', function() telescope.git_files() end, desc = '[S]earch [G]it Files' },
+        { '<leader>sF', function() telescope.find_files() end, desc = '[S]earch [F]iles' },
+        { '<leader>sh', function() telescope.help_tags() end, desc = '[S]earch [H]elp' },
+        { '<leader>sw', function() telescope.grep_string() end, desc = '[S]earch for current [W]ord' },
+        { '<leader>sg', function() telescope.current_buffer_fuzzy_find() end, desc = '[S]earch with [G]rep' },
+        { '<leader>sG', function() telescope.live_grep() end, desc = '[S]earch [G]rep Globally' },
+        { '<leader>sd', function() telescope.diagnostics() end, desc = '[S]earch [D]iagnostics' },
 
         { '<leader>bl', function() telescope.buffers() end, desc = '[B]uffer [L]ist' },
       }
@@ -274,7 +274,16 @@ local ui = {
   },
 
   {
-    "numToStr/FTerm.nvim",
+   'folke/trouble.nvim',
+   dependencies = {
+      'nvim-tree/nvim-web-devicons'
+    },
+   opts = {
+   },
+  },
+
+  {
+    'numToStr/FTerm.nvim',
     lazy = false,
     init = function()
       vim.api.nvim_create_user_command('FTermOpen', require('FTerm').open, { bang = true })
@@ -283,7 +292,7 @@ local ui = {
       vim.api.nvim_create_user_command('FTermToggle', require('FTerm').toggle, { bang = true })
     end,
     opts = {
-      -- auto_close = false,
+      auto_close = false,
     },
     keys = {
       { '<C-_>', function() require('FTerm').toggle() end, desc = 'Toggle Terminal', mode = 'n' },
@@ -297,7 +306,7 @@ local lsp = {
     'folke/neodev.nvim',
     opts = {
       library = {
-        plugins = { "nvim-dap-ui" },
+        plugins = { 'nvim-dap-ui' },
         types = true
       },
     }
@@ -322,9 +331,9 @@ local lsp = {
     opts = {
       ui = {
         icons = {
-          package_installed = "✓",
-          package_pending = "➜",
-          package_uninstalled = "✗"
+          package_installed = '✓',
+          package_pending = '➜',
+          package_uninstalled = '✗'
         }
       },
       log_level = vim.log.levels.INFO,
@@ -357,19 +366,19 @@ local lsp = {
       ensure_installed = { 'html', 'rust_analyzer', 'tsserver', 'lua_ls' },
       handlers = {
         function(server_name)
-          require("lspconfig")[server_name].setup {}
+          require('lspconfig')[server_name].setup {}
         end,
 
-        ["rust_analyzer"] = function()
-          require("rust-tools").setup {}
+        ['rust_analyzer'] = function()
+          require('rust-tools').setup {}
         end,
 
-        ["lua_ls"] = function ()
-          require("lspconfig").lua_ls.setup {
+        ['lua_ls'] = function ()
+          require('lspconfig').lua_ls.setup {
             settings = {
               Lua = {
                 diagnostics = {
-                  globals = { "vim" }
+                  globals = { 'vim' }
                 }
               }
             }
@@ -391,11 +400,11 @@ local lsp = {
 }
 
 local code = {
-  -- "gc" to comment visual regions/lines
+  -- 'gc' to comment visual regions/lines
   {
     'numToStr/Comment.nvim',
     opts = {},
-    event = "VeryLazy"
+    event = 'VeryLazy'
   },
 
   {
@@ -405,13 +414,12 @@ local code = {
 
   -- Highlight, edit, and navigate code
   {
-    "nvim-treesitter/nvim-treesitter-textobjects",
+    'nvim-treesitter/nvim-treesitter-textobjects',
     init = function()
-      local loader = require("lazy.core.loader")
-      loader.disable_rtp_plugin("nvim-treesitter-textobjects")
+      local loader = require('lazy.core.loader')
+      loader.disable_rtp_plugin('nvim-treesitter-textobjects')
       load_textobjects = true
     end,
-    -- opts = {},
   },
 
   {
@@ -420,106 +428,105 @@ local code = {
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
-    build = ":TSUpdate",
-    event = { "BufReadPost", "BufRead", "BufNewFile" },
-    cmd = { "TSUpdateSync" },
+    build = ':TSUpdate',
+    event = { 'BufReadPost', 'BufRead', 'BufNewFile' },
+    cmd = { 'TSUpdateSync' },
     keys = {
-      { "<c-space>", desc = "Increment selection" },
-      { "<bs>", desc = "Decrement selection", mode = "x" }
+      { '<c-space>', desc = 'Increment selection' },
+      { '<bs>', desc = 'Decrement selection', mode = 'x' }
     },
-    ---@param opts TSConfig
-    opts = {
-      ensure_installed = { 'lua', 'luadoc', 'rust', 'tsx', 'javascript', 'jsdoc', 'css', 'html', 'svelte', 'typescript', 'vim', 'c_sharp' },
-      auto_install = true,
-
-      highlight = {
-        enable = true
-      },
-      indent = {
-        enable = true
-      },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = '<C-space>',
-          node_incremental = '<C-space>',
-          scope_incremental = '<C-s>',
-          node_decremental = '<M-space>',
+    opts = function()
+      require('nvim-treesitter.configs').setup {
+        ensure_installed = { 'lua', 'luadoc', 'rust', 'tsx', 'javascript', 'jsdoc', 'css', 'html', 'svelte', 'typescript', 'vim', 'c_sharp' },
+        auto_install = true,
+        highlight = {
+          enable = true
         },
-      },
-      textobjects = {
-        select = {
+        indent = {
+          enable = true
+        },
+        incremental_selection = {
           enable = true,
-          lookahead = true,
           keymaps = {
-            ['aa'] = '@parameter.outer',
-            ['ia'] = '@parameter.inner',
-            ['af'] = '@function.outer',
-            ['if'] = '@function.inner',
-            ['ac'] = '@class.outer',
-            ['ic'] = '@class.inner',
+            init_selection = '<C-space>',
+            node_incremental = '<C-space>',
+            scope_incremental = '<C-s>',
+            node_decremental = '<M-space>',
           },
         },
-        move = {
-          enable = true,
-          set_jumps = true, -- whether to set jumps in the jumplist
-          goto_next_start = {
-            [']m'] = '@function.outer',
-            [']]'] = '@class.outer',
+        textobjects = {
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              ['aa'] = '@parameter.outer',
+              ['ia'] = '@parameter.inner',
+              ['af'] = '@function.outer',
+              ['if'] = '@function.inner',
+              ['ac'] = '@class.outer',
+              ['ic'] = '@class.inner',
+            },
           },
-          goto_next_end = {
-            [']M'] = '@function.outer',
-            [']['] = '@class.outer',
+          move = {
+            enable = true,
+            set_jumps = true, -- whether to set jumps in the jumplist
+            goto_next_start = {
+              [']m'] = '@function.outer',
+              [']]'] = '@class.outer',
+            },
+            goto_next_end = {
+              [']M'] = '@function.outer',
+              [']['] = '@class.outer',
+            },
+            goto_previous_start = {
+              ['[m'] = '@function.outer',
+              ['[['] = '@class.outer',
+            },
+            goto_previous_end = {
+              ['[M'] = '@function.outer',
+              ['[]'] = '@class.outer',
+            },
           },
-          goto_previous_start = {
-            ['[m'] = '@function.outer',
-            ['[['] = '@class.outer',
+          swap = {
+            enable = true,
+            swap_next = {
+              ['<leader>a'] = '@parameter.inner',
+            },
+            swap_previous = {
+              ['<leader>A'] = '@parameter.inner',
+            },
           },
-          goto_previous_end = {
-            ['[M'] = '@function.outer',
-            ['[]'] = '@class.outer',
-          },
-        },
-        swap = {
-          enable = true,
-          swap_next = {
-            ['<leader>a'] = '@parameter.inner',
-          },
-          swap_previous = {
-            ['<leader>A'] = '@parameter.inner',
-          },
-        },
-      },
-      ---@param opts TSConfig
-      config = function(_, opts)
-        if type(opts.ensure_installed) == "table" then
-          ---@type table<string, boolean>
-          local added = {}
-          opts.ensure_installed = vim.tbl_filter(function(lang)
-            if added[lang] then
-              return false
-            end
-            added[lang] = true
-            return true
-          end, opts.ensure_installed)
-        end
-        require("nvim-treesitter.configs").setup(opts)
+        }
+      };
+    end,
+    config = function(_, opts)
+      if type(opts.ensure_installed) == 'table' then
+        ---@type table<string, boolean>
+        local added = {}
+        opts.ensure_installed = vim.tbl_filter(function(lang)
+          if added[lang] then
+            return false
+          end
+          added[lang] = true
+          return true
+        end, opts.ensure_installed)
+      end
+      require('nvim-treesitter.configs').setup(opts)
 
-        if load_textobjects then
-          if opts.textobjects then
-            for _, mod in ipairs({ "move", "select", "swap", "lsp_interop" }) do
-              if opts.textobjects[mod] and opts.textobjects[mod].enable then
-                local Loader = require("lazy.core.loader")
-                Loader.disabled_rtp_plugins["nvim-treesitter-textobjects"] = nil
-                local plugin = require("lazy.core.config").plugins["nvim-treesitter-textobjects"]
-                require("lazy.core.loader").source_runtime(plugin.dir, "plugin")
-                break
-              end
+      if load_textobjects then
+        if opts.textobjects then
+          for _, mod in ipairs({ 'move', 'select', 'swap', 'lsp_interop' }) do
+            if opts.textobjects[mod] and opts.textobjects[mod].enable then
+              local Loader = require('lazy.core.loader')
+              Loader.disabled_rtp_plugins['nvim-treesitter-textobjects'] = nil
+              local plugin = require('lazy.core.config').plugins['nvim-treesitter-textobjects']
+              require('lazy.core.loader').source_runtime(plugin.dir, 'plugin')
+              break
             end
           end
         end
-      end,
-    },
+      end
+    end,
   },
 
   {
