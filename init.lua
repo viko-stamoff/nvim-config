@@ -1,6 +1,24 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+vim.wo.relativenumber = true
+vim.o.hlsearch = false
+vim.o.mouse = 'a'
+vim.o.clipboard = 'unnamedplus'
+vim.o.breakindent = true
+vim.o.undofile = true
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.o.updatetime = 250
+vim.o.timeoutlen = 300
+vim.o.completeopt = 'menuone,noselect'
+vim.o.termguicolors = true
+vim.o.scrolloff = 5
+vim.wo.number = true
+vim.wo.signcolumn = 'yes'
+vim.wo.relativenumber = true
+vim.opt.autochdir = true
+
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -32,15 +50,11 @@ local git = {
         changedelete = { text = '~' },
       },
     },
-    keys = function()
-      local gitsigns = require('gitsigns')
-
-      return {
-        { '<leader>gp', function() gitsigns.prev_hunk() end,    desc = 'Go to Previous Hunk' },
-        { '<leader>gn', function() gitsigns.next_hunk() end,    desc = 'Go to Next Hunk' },
-        { '<leader>gh', function() gitsigns.preview_hunk() end, desc = 'Preview Hunk' },
-      }
-    end,
+    keys = {
+      { '<leader>gp', function() require('gitsigns').prev_hunk() end,    desc = 'Go to Previous Hunk' },
+      { '<leader>gn', function() require('gitsigns').next_hunk() end,    desc = 'Go to Next Hunk' },
+      { '<leader>gh', function() require('gitsigns').preview_hunk() end, desc = 'Preview Hunk' },
+    },
   },
 }
 
@@ -60,25 +74,6 @@ local vim_keymaps = {
     'mrjones2014/legendary.nvim',
     priority = 10000,
     lazy = false,
-    init = function()
-      vim.wo.relativenumber = true
-      vim.o.hlsearch = false
-      vim.o.mouse = 'a'
-      vim.o.clipboard = 'unnamedplus'
-      vim.o.breakindent = true
-      vim.o.undofile = true
-      vim.o.ignorecase = true
-      vim.o.smartcase = true
-      vim.o.updatetime = 250
-      vim.o.timeoutlen = 300
-      vim.o.completeopt = 'menuone,noselect'
-      vim.o.termguicolors = true
-      vim.o.scrolloff = 5
-      vim.wo.number = true
-      vim.wo.signcolumn = 'yes'
-      vim.wo.relativenumber = true
-      vim.opt.autochdir = true
-    end,
     opts = {
       lazy_nvim = {
         auto_register = true
@@ -196,36 +191,28 @@ local autocompletion = {
 
 local fuzzyfinder = {
   {
-    'nvim-telescope/telescope-fzf-native.nvim',
-    build = 'make',
-    cond = function()
-      local enable_native = pcall(require('telescope').load_extension, 'fzf')
-      local can_build_with_make = vim.fn.executable 'make' == 1
-
-      return enable_native and can_build_with_make
-    end,
-  },
-
-  {
     'nvim-telescope/telescope.nvim',
-    branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-telescope/telescope-fzf-native.nvim',
     },
-    keys = function()
-      local telescope = require('telescope.builtin')
+    keys = {
+      { '<leader>sf', function() require('telescope.builtin').git_files() end,                 desc = 'Search Git Files' },
+      { '<leader>sF', function() require('telescope.builtin').find_files() end,                desc = 'Search Files' },
+      { '<leader>sh', function() require('telescope.builtin').help_tags() end,                 desc = 'Search Help' },
+      { '<leader>sw', function() require('telescope.builtin').grep_string() end,               desc = 'Search for current Word' },
+      { '<leader>sg', function() require('telescope.builtin').current_buffer_fuzzy_find() end, desc = 'Search with Grep' },
+      { '<leader>sG', function() require('telescope.builtin').live_grep() end,                 desc = 'Search Grep Globally' },
+      { '<leader>sd', function() require('telescope.builtin').diagnostics() end,               desc = 'Search Diagnostics' },
+      { '<leader>bl', function() require('telescope.builtin').buffers() end,                   desc = 'Buffer List' },
+    }
+  },
 
-      return {
-        { '<leader>sf', function() telescope.git_files() end,                 desc = 'Search Git Files' },
-        { '<leader>sF', function() telescope.find_files() end,                desc = 'Search Files' },
-        { '<leader>sh', function() telescope.help_tags() end,                 desc = 'Search Help' },
-        { '<leader>sw', function() telescope.grep_string() end,               desc = 'Search for current Word' },
-        { '<leader>sg', function() telescope.current_buffer_fuzzy_find() end, desc = 'Search with Grep' },
-        { '<leader>sG', function() telescope.live_grep() end,                 desc = 'Search Grep Globally' },
-        { '<leader>sd', function() telescope.diagnostics() end,               desc = 'Search Diagnostics' },
-        { '<leader>bl', function() telescope.buffers() end,                   desc = 'Buffer List' },
-      }
+  {
+    'nvim-telescope/telescope-fzf-native.nvim',
+    build = 'make',
+    config = function()
+      require("telescope").load_extension("fzf")
     end,
   },
 }
@@ -314,31 +301,17 @@ local ui = {
     dependencies = {
       'nvim-tree/nvim-web-devicons'
     },
-    opts = function()
-      local trouble = require('trouble.providers.telescope')
-
-      return {
-        defaults = {
-          mappings = {
-            i = {
-              ['<C-u>'] = false,
-              ['<C-d>'] = trouble.open_with_trouble,
-            },
-          },
-        },
-      }
-    end,
-    keys = function()
-      local trouble = require('trouble')
-
-      return {
-        { '<leader>x',  desc = 'Quick Fix' },
-        { '<leader>xp', function() trouble.open() end,                        desc = 'Open problems' },
-        { '<leader>xw', function() trouble.open('workspace_diagnostics') end, desc = 'Open workspace diagnostics' },
-        { '<leader>xd', function() trouble.open('document_diagnostics') end,  desc = 'Open document diagnostics' },
-        { '<leader>xq', function() trouble.close() end,                       desc = 'Close quickfix window' },
-      }
-    end,
+    cmd = { 'TroubleToggle', 'Trouble' },
+    opts = {
+      use_diagnostic_signs = true,
+    },
+    keys = {
+      { '<leader>x',  desc = 'Quick Fix' },
+      { '<leader>xp', function() require('trouble').open() end,                        desc = 'Open problems' },
+      { '<leader>xw', function() require('trouble').open('workspace_diagnostics') end, desc = 'Open workspace diagnostics' },
+      { '<leader>xd', function() require('trouble').open('document_diagnostics') end,  desc = 'Open document diagnostics' },
+      { '<leader>xq', function() require('trouble').close() end,                       desc = 'Close quickfix window' },
+    }
   },
 
   {
@@ -586,122 +559,125 @@ local lsp = {
         -- ["*"] = function(server, opts) end,
       },
     },
-    ---@param opts PluginLspOpts
+    --@param opts PluginLspOpts
     config = function(_, opts)
-      local Util = require("lazyvim.util")
-
-      if Util.has("neoconf.nvim") then
-        local plugin = require("lazy.core.config").spec.plugins["neoconf.nvim"]
-        require("neoconf").setup(require("lazy.core.plugin").values(plugin, "opts", false))
-      end
-      -- setup autoformat
-      require("lazyvim.plugins.lsp.format").setup(opts)
-      -- setup formatting and keymaps
-      Util.on_attach(function(client, buffer)
-        require("lazyvim.plugins.lsp.keymaps").on_attach(client, buffer)
-      end)
-
-      local register_capability = vim.lsp.handlers["client/registerCapability"]
-
-      vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
-        local ret = register_capability(err, res, ctx)
-        local client_id = ctx.client_id
-        ---@type lsp.Client
-        local client = vim.lsp.get_client_by_id(client_id)
-        local buffer = vim.api.nvim_get_current_buf()
-        require("lazyvim.plugins.lsp.keymaps").on_attach(client, buffer)
-        return ret
-      end
-
-      -- diagnostics
-      for name, icon in pairs(require("lazyvim.config").icons.diagnostics) do
-        name = "DiagnosticSign" .. name
-        vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
-      end
-
-      local inlay_hint = vim.lsp.buf.inlay_hint or vim.lsp.inlay_hint
-
-      if opts.inlay_hints.enabled and inlay_hint then
-        Util.on_attach(function(client, buffer)
-          if client.supports_method('textDocument/inlayHint') then
-            inlay_hint(buffer, true)
-          end
-        end)
-      end
-
-      if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
-        opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
-            or function(diagnostic)
-              local icons = require("lazyvim.config").icons.diagnostics
-              for d, icon in pairs(icons) do
-                if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
-                  return icon
-                end
-              end
-            end
-      end
-
-      vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
-
-      local servers = opts.servers
-      local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-      local capabilities = vim.tbl_deep_extend(
-        "force",
-        {},
-        vim.lsp.protocol.make_client_capabilities(),
-        has_cmp and cmp_nvim_lsp.default_capabilities() or {},
-        opts.capabilities or {}
-      )
-
-      local function setup(server)
-        local server_opts = vim.tbl_deep_extend("force", {
-          capabilities = vim.deepcopy(capabilities),
-        }, servers[server] or {})
-
-        if opts.setup[server] then
-          if opts.setup[server](server, server_opts) then
-            return
-          end
-        elseif opts.setup["*"] then
-          if opts.setup["*"](server, server_opts) then
-            return
-          end
-        end
-        require("lspconfig")[server].setup(server_opts)
-      end
-
-      -- get all the servers that are available through mason-lspconfig
-      local have_mason, mlsp = pcall(require, "mason-lspconfig")
-      local all_mslp_servers = {}
-      if have_mason then
-        all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
-      end
-
-      local ensure_installed = {} ---@type string[]
-      for server, server_opts in pairs(servers) do
-        if server_opts then
-          server_opts = server_opts == true and {} or server_opts
-          -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
-          if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
-            setup(server)
-          else
-            ensure_installed[#ensure_installed + 1] = server
-          end
-        end
-      end
-
-      if have_mason then
-        mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup } })
-      end
-
-      if Util.lsp_get_config("denols") and Util.lsp_get_config("tsserver") then
-        local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
-        Util.lsp_disable("tsserver", is_deno)
-        Util.lsp_disable("denols", function(root_dir)
-          return not is_deno(root_dir)
-        end)
-      end
     end,
+    ---@param opts PluginLspOpts
+    -- config = function(_, opts)
+    --   local Util = require("util")
+    --
+    --   if Util.has("neoconf.nvim") then
+    --     local plugin = require("lazy.core.config").spec.plugins["neoconf.nvim"]
+    --     require("neoconf").setup(require("lazy.core.plugin").values(plugin, "opts", false))
+    --   end
+    --   -- setup autoformat
+    --   require("lazyvim.plugins.lsp.format").setup(opts)
+    --   -- setup formatting and keymaps
+    --   Util.on_attach(function(client, buffer)
+    --     require("lazyvim.plugins.lsp.keymaps").on_attach(client, buffer)
+    --   end)
+    --
+    --   local register_capability = vim.lsp.handlers["client/registerCapability"]
+    --
+    --   vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
+    --     local ret = register_capability(err, res, ctx)
+    --     local client_id = ctx.client_id
+    --     ---@type lsp.Client
+    --     local client = vim.lsp.get_client_by_id(client_id)
+    --     local buffer = vim.api.nvim_get_current_buf()
+    --     require("lazyvim.plugins.lsp.keymaps").on_attach(client, buffer)
+    --     return ret
+    --   end
+    --
+    --   -- diagnostics
+    --   for name, icon in pairs(require("lazyvim.config").icons.diagnostics) do
+    --     name = "DiagnosticSign" .. name
+    --     vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
+    --   end
+    --
+    --   local inlay_hint = vim.lsp.buf.inlay_hint or vim.lsp.inlay_hint
+    --
+    --   if opts.inlay_hints.enabled and inlay_hint then
+    --     Util.on_attach(function(client, buffer)
+    --       if client.supports_method('textDocument/inlayHint') then
+    --         inlay_hint(buffer, true)
+    --       end
+    --     end)
+    --   end
+    --
+    --   if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
+    --     opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
+    --         or function(diagnostic)
+    --           local icons = require("lazyvim.config").icons.diagnostics
+    --           for d, icon in pairs(icons) do
+    --             if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
+    --               return icon
+    --             end
+    --           end
+    --         end
+    --   end
+    --
+    --   vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
+    --
+    --   local servers = opts.servers
+    --   local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+    --   local capabilities = vim.tbl_deep_extend(
+    --     "force",
+    --     {},
+    --     vim.lsp.protocol.make_client_capabilities(),
+    --     has_cmp and cmp_nvim_lsp.default_capabilities() or {},
+    --     opts.capabilities or {}
+    --   )
+    --
+    --   local function setup(server)
+    --     local server_opts = vim.tbl_deep_extend("force", {
+    --       capabilities = vim.deepcopy(capabilities),
+    --     }, servers[server] or {})
+    --
+    --     if opts.setup[server] then
+    --       if opts.setup[server](server, server_opts) then
+    --         return
+    --       end
+    --     elseif opts.setup["*"] then
+    --       if opts.setup["*"](server, server_opts) then
+    --         return
+    --       end
+    --     end
+    --     require("lspconfig")[server].setup(server_opts)
+    --   end
+    --
+    --   -- get all the servers that are available through mason-lspconfig
+    --   local have_mason, mlsp = pcall(require, "mason-lspconfig")
+    --   local all_mslp_servers = {}
+    --   if have_mason then
+    --     all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
+    --   end
+    --
+    --   local ensure_installed = {} ---@type string[]
+    --   for server, server_opts in pairs(servers) do
+    --     if server_opts then
+    --       server_opts = server_opts == true and {} or server_opts
+    --       -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
+    --       if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
+    --         setup(server)
+    --       else
+    --         ensure_installed[#ensure_installed + 1] = server
+    --       end
+    --     end
+    --   end
+    --
+    --   if have_mason then
+    --     mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup } })
+    --   end
+    --
+    --   if Util.lsp_get_config("denols") and Util.lsp_get_config("tsserver") then
+    --     local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
+    --     Util.lsp_disable("tsserver", is_deno)
+    --     Util.lsp_disable("denols", function(root_dir)
+    --       return not is_deno(root_dir)
+    --     end)
+    --   end
+    -- end,
   },
 }
 
@@ -816,9 +792,6 @@ local code = {
       { '<leader>u', function() require('telescope').extensions.undo.undo() end, desc = 'Undo Tree' },
     },
     config = function()
-      local telescope = require('telescope')
-      local telescope_actions = require('telescope-undo.actions')
-
       telescope.setup({
         extensions = {
           undo = {
@@ -829,9 +802,9 @@ local code = {
             },
             mappings = {
               i = {
-                ['<CR>'] = telescope_actions.yank_additions,
-                ['<S-CR>'] = telescope_actions.yank_deletions,
-                ['<C-CR>'] = telescope_actions.restore,
+                ['<CR>'] = require('telescope_actions').yank_additions,
+                ['<S-CR>'] = require('telescope_actions').yank_deletions,
+                ['<C-CR>'] = require('telescope_actions').restore,
               }
             }
           },
@@ -843,31 +816,30 @@ local code = {
   },
 
   -- Linter
-  {
-    'jose-elias-alvarez/null-ls.nvim',
-    event = { 'BufReadPre', 'BufNewFile' },
-    dependencies = { 'mason.nvim' },
-    opts = function()
-      local nls = require('null-ls')
-      return {
-        root_dir = require('null-ls.utils').root_pattern('.null-ls-root', '.neoconf.json', 'Makefile', '.git'),
-        sources = {
-          nls.builtins.formatting.fish_indent,
-          nls.builtins.diagnostics.fish,
-          nls.builtins.formatting.stylua,
-          nls.builtins.formatting.shfmt,
-          -- nls.builtins.diagnostics.flake8,
-        },
-      }
-    end,
-  },
+  --{
+    --'jose-elias-alvarez/null-ls.nvim',
+    --event = { 'BufReadPre', 'BufNewFile' },
+    --dependencies = 
+    --{
+      --'williamboman/mason.nvim',
+    --},
+    --opts = {
+      --sources = {
+        --require('null-ls').builtins.formatting.fish_indent,
+        --require('null-ls').builtins.diagnostics.fish,
+        --require('null-ls').builtins.formatting.stylua,
+        --require('null-ls').builtins.formatting.shfmt,
+        ---- require('null-ls').builtins.diagnostics.flake8,
+      --},
+      --root_dir = require('null-ls.utils').root_pattern('.null-ls-root', '.neoconf.json', 'Makefile', '.git'),
+    --}
+  --},
 
   -- Highlight, edit, and navigate code
   {
     'nvim-treesitter/nvim-treesitter-textobjects',
     init = function()
-      local loader = require('lazy.core.loader')
-      loader.disable_rtp_plugin('nvim-treesitter-textobjects')
+      require('lazy.core.loader').disable_rtp_plugin('nvim-treesitter-textobjects')
       load_textobjects = true
     end,
   },
@@ -1007,49 +979,45 @@ local code = {
       'williamboman/mason.nvim',
       'jay-babu/mason-nvim-dap.nvim',
     },
-    keys = function()
-      local dap = require('dap')
-
-      return {
-        {
-          '<F5>',
-          function() dap.continue() end,
-          desc =
-          'Debug: Start/Continue'
-        },
-        {
-          '<F1>',
-          function() dap.step_into() end,
-          desc =
-          'Debug: Step Into'
-        },
-        {
-          '<F2>',
-          function() dap.step_over() end,
-          desc =
-          'Debug: Step Over'
-        },
-        {
-          '<F3>',
-          function() dap.step_out() end,
-          desc =
-          'Debug: Step Out'
-        },
-        {
-          '<leader>cb',
-          function() dap.toggle_breakpoint() end,
-          desc =
-          'Debug: Toggle Breakpoint'
-        },
-        {
-          '<leader>cB',
-          function() dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')() end,
-          desc =
-          'Debug: Set Breakpoint with Condition'
-        },
-        { '<leader>td', function() require('neotest').run.run({ strategy = 'dap' }) end, desc = 'Debug Nearest' },
-      }
-    end,
+    keys = {
+      {
+        '<F5>',
+        function() require('dap').continue() end,
+        desc =
+        'Debug: Start/Continue'
+      },
+      {
+        '<F1>',
+        function() require('dap').step_into() end,
+        desc =
+        'Debug: Step Into'
+      },
+      {
+        '<F2>',
+        function() require('dap').step_over() end,
+        desc =
+        'Debug: Step Over'
+      },
+      {
+        '<F3>',
+        function() require('dap').step_out() end,
+        desc =
+        'Debug: Step Out'
+      },
+      {
+        '<leader>cb',
+        function() require('dap').toggle_breakpoint() end,
+        desc =
+        'Debug: Toggle Breakpoint'
+      },
+      {
+        '<leader>cB',
+        function() require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')() end,
+        desc =
+        'Debug: Set Breakpoint with Condition'
+      },
+      { '<leader>td', function() require('neotest').run.run({ strategy = 'dap' }) end, desc = 'Debug Nearest' },
+    }
   },
 }
 
