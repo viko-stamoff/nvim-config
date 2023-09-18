@@ -2,18 +2,6 @@ require('core.neovim')
 require('core.lazy')
 
 local code = {
-  -- 'gc' to comment visual regions/lines
-  {
-    'numToStr/Comment.nvim',
-    opts = {},
-    event = 'VeryLazy'
-  },
-
-  {
-    'windwp/nvim-autopairs',
-    opts = {}
-  },
-
   {
     'nvim-neotest/neotest',
     opts = {
@@ -99,144 +87,6 @@ local code = {
     },
   },
 
-
-  -- Linter
-  --{
-    --'jose-elias-alvarez/null-ls.nvim',
-    --event = { 'BufReadPre', 'BufNewFile' },
-    --dependencies = 
-    --{
-      --'williamboman/mason.nvim',
-    --},
-    --opts = {
-      --sources = {
-        --require('null-ls').builtins.formatting.fish_indent,
-        --require('null-ls').builtins.diagnostics.fish,
-        --require('null-ls').builtins.formatting.stylua,
-        --require('null-ls').builtins.formatting.shfmt,
-        ---- require('null-ls').builtins.diagnostics.flake8,
-      --},
-      --root_dir = require('null-ls.utils').root_pattern('.null-ls-root', '.neoconf.json', 'Makefile', '.git'),
-    --}
-  --},
-
-  -- Highlight, edit, and navigate code
-  {
-    'nvim-treesitter/nvim-treesitter-textobjects',
-    init = function()
-      require('lazy.core.loader').disable_rtp_plugin('nvim-treesitter-textobjects')
-      load_textobjects = true
-    end,
-  },
-
-  {
-    'nvim-treesitter/nvim-treesitter',
-    version = false,
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
-    },
-    build = ':TSUpdate',
-    event = { 'BufReadPost', 'BufRead', 'BufNewFile' },
-    cmd = { 'TSUpdateSync' },
-    keys = {
-      { '<c-space>', desc = 'Increment selection' },
-      { '<bs>',      desc = 'Decrement selection', mode = 'x' }
-    },
-    opts = function()
-      require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'lua', 'luadoc', 'rust', 'tsx', 'javascript', 'jsdoc', 'css', 'html', 'svelte', 'vim',
-          'c_sharp' },
-        auto_install = true,
-        highlight = {
-          enable = true
-        },
-        indent = {
-          enable = true
-        },
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            init_selection = '<C-space>',
-            node_incremental = '<C-space>',
-            scope_incremental = '<C-s>',
-            node_decremental = '<M-space>',
-          },
-        },
-        textobjects = {
-          select = {
-            enable = true,
-            lookahead = true,
-            keymaps = {
-              ['aa'] = '@parameter.outer',
-              ['ia'] = '@parameter.inner',
-              ['af'] = '@function.outer',
-              ['if'] = '@function.inner',
-              ['ac'] = '@class.outer',
-              ['ic'] = '@class.inner',
-            },
-          },
-          move = {
-            enable = true,
-            set_jumps = true, -- whether to set jumps in the jumplist
-            goto_next_start = {
-              [']m'] = '@function.outer',
-              [']]'] = '@class.outer',
-            },
-            goto_next_end = {
-              [']M'] = '@function.outer',
-              [']['] = '@class.outer',
-            },
-            goto_previous_start = {
-              ['[m'] = '@function.outer',
-              ['[['] = '@class.outer',
-            },
-            goto_previous_end = {
-              ['[M'] = '@function.outer',
-              ['[]'] = '@class.outer',
-            },
-          },
-          swap = {
-            enable = true,
-            swap_next = {
-              ['<leader>a'] = '@parameter.inner',
-            },
-            swap_previous = {
-              ['<leader>A'] = '@parameter.inner',
-            },
-          },
-        }
-      };
-    end,
-    config = function(_, opts)
-      if type(opts.ensure_installed) == 'table' then
-        ---@type table<string, boolean>
-        local added = {}
-        opts.ensure_installed = vim.tbl_filter(function(lang)
-          if added[lang] then
-            return false
-          end
-          added[lang] = true
-          return true
-        end, opts.ensure_installed)
-      end
-      require('nvim-treesitter.configs').setup(opts)
-
-      if load_textobjects then
-        if opts.textobjects then
-          for _, mod in ipairs({ 'move', 'select', 'swap', 'lsp_interop' }) do
-            if opts.textobjects[mod] and opts.textobjects[mod].enable then
-              local Loader = require('lazy.core.loader')
-              Loader.disabled_rtp_plugins['nvim-treesitter-textobjects'] = nil
-              local plugin = require('lazy.core.config').plugins['nvim-treesitter-textobjects']
-              require('lazy.core.loader').source_runtime(plugin.dir, 'plugin')
-              break
-            end
-          end
-        end
-      end
-    end,
-  },
-
   {
     'rcarriga/nvim-dap-ui',
     opts = {
@@ -316,19 +166,6 @@ local rust = {
     },
   }
 }
-
---require('lazy').setup({
-  --vim_keymaps,
-  --git,
-  --theme,
-  --autocompletion,
-  --fuzzyfinder,
-  --editing,
-  --lsp,
-  --code,
-  --ui,
-  --rust,
---}, {})
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

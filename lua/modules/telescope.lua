@@ -25,7 +25,12 @@ return {
   {
     'nvim-telescope/telescope-fzf-native.nvim',
     dependency = {
+      'nvim-telescope/telescope.nvim',
     },
     build = 'make',
+    opts = {},
+    config = function()
+      require('telescope').load_extension('fzf')
+    end
   }
 }
