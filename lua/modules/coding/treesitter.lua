@@ -2,29 +2,24 @@
 return {
   {
     'nvim-treesitter/nvim-treesitter-textobjects',
-    init = function()
-      require('lazy.core.loader').disable_rtp_plugin('nvim-treesitter-textobjects')
-      load_textobjects = true
-    end,
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+    },
   },
 
   {
     'nvim-treesitter/nvim-treesitter',
     version = false,
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
-    },
     build = ':TSUpdate',
     event = { 'BufReadPost', 'BufRead', 'BufNewFile' },
     cmd = { 'TSUpdateSync' },
     keys = {
       { '<C-Space>', desc = 'Increment selection' },
-      { '<BS>',      desc = 'Decrement selection', mode = 'x' }
+      { '<BS>', desc = 'Decrement selection', mode = 'x' }
     },
     opts = function()
       require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'lua', 'luadoc', 'rust', 'tsx', 'javascript', 'jsdoc', 'css', 'html', 'svelte', 'vim',
-          'c_sharp' },
+        ensure_installed = { 'javascript', 'jsdoc', 'css', 'html', 'svelte', 'vim','c_sharp' },
         auto_install = true,
         highlight = {
           enable = true
@@ -42,7 +37,7 @@ return {
           },
         },
         textobjects = {
-          select = {
+         select = {
             enable = true,
             lookahead = true,
             keymaps = {

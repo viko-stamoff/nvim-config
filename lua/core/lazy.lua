@@ -15,7 +15,9 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   spec = {
     { import = 'modules' },
-    { import = 'modules.lsp' },
+    { import = 'modules.coding' },
+    { import = 'modules.coding.lsp' },
+    -- { import = 'modules.coding.lsp.languages' },
   },
   -- automatically check for plugin updates
   checker = {

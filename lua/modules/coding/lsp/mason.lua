@@ -269,7 +269,7 @@ local M = {
     },
     opts = {
       automatic_installation = true,
-      ensure_installed = { 'rust_analyzer', 'lua_ls' },
+      ensure_installed = { 'rust_analyzer', 'lua_ls', 'typescript' },
       handlers = {
         function(server_name)
           require('lspconfig')[server_name].setup {}
@@ -279,17 +279,17 @@ local M = {
         --  require('rust-tools').setup {}
         --end,
 
-        ['lua_ls'] = function()
-          require('lspconfig').lua_ls.setup {
-            settings = {
-              Lua = {
-                diagnostics = {
-                  globals = { 'vim' }
-                }
-              }
-            }
-          }
-        end,
+        -- ['lua_ls'] = function()
+        --   require('lspconfig').lua_ls.setup {
+        --     settings = {
+        --       Lua = {
+        --         diagnostics = {
+        --           globals = { 'vim' }
+        --         }
+        --       }
+        --     }
+        --   }
+        -- end,
       },
     },
   },
@@ -312,7 +312,7 @@ local M = {
   --},
 
   -- Import Languages's configs
-  { import = 'modules.lsp.languages.lua' },
+  { import = 'modules.lsp.languages' },
 };
 
 return M;

@@ -24,7 +24,7 @@ return {
 
   {
     'nvim-telescope/telescope-fzf-native.nvim',
-    dependency = {
+    dependencies = {
       'nvim-telescope/telescope.nvim',
     },
     build = 'make',

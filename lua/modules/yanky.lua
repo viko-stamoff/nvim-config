@@ -14,7 +14,6 @@ return {
       local mappings = mapping.get_defaults()
       --mappings.i['<c-p>'] = nil
       return {
-        highlight = { timer = 200 },
         ring = {
 	  storage = jit.os:find('Windows') and 'shada' or 'sqlite'
         },
@@ -24,6 +23,11 @@ return {
             mappings = mappings,
           },
         },
+        highlight = {
+	  on_put = true,
+	  on_yank = true,
+	  timer = 500,
+	},
       }
     end,
     keys = {
