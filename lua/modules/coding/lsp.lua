@@ -1,21 +1,8 @@
 return {
-  -- LSP Servers Setup
-  {
-    'neovim/nvim-lspconfig',
-    dependencies = {
-      'j-hui/fidget.nvim',
-      'folke/neodev.nvim',
-      'hrsh7th/cmp-nvim-lsp'
-    },
-    cmd = { 'LspInfo', 'LspInstall', 'LspStart' },
-  },
-
   -- LSP Package Manager (UI)
   {
     'williamboman/mason.nvim',
-    dependencies = {
-      'neovim/nvim-lspconfig',
-    },
+    lazy = false,
     opts = {
       ui = {
         icons = {
@@ -34,26 +21,55 @@ return {
     'williamboman/mason-lspconfig.nvim',
     dependencies = {
       'williamboman/mason.nvim',
-      'neovim/nvim-lspconfig',
     },
-    opts =  function()
-      -- This is where all the LSP shenanigans will live
-      local lsp = require('lsp-zero')
-      lsp.extend_lspconfig()
+    opts = {
+      automatic_installation = true,
+      ensure_installed = {},
+      handlers = {},
+    }
+    -- opts = function()
+    --   -- This is where all the LSP shenanigans will live
+    --   local lsp = require('lsp-zero')
+    --   lsp.extend_lspconfig()
+    --
+    --   lsp.on_attach(function(_, bufnr)
+    --     -- see :help lsp-zero-keybindings
+    --     -- to learn the available actions
+    --     lsp.default_keymaps({buffer = bufnr})
+    --   end)
+    -- end,
+  },
 
-      lsp.on_attach(function(_, bufnr)
-        -- see :help lsp-zero-keybindings
-        -- to learn the available actions
-        lsp.default_keymaps({buffer = bufnr})
-      end)
+  -- LSP Servers Setup
+  {
+    'neovim/nvim-lspconfig',
+    dependencies = {
+      'j-hui/fidget.nvim',
+      'folke/neodev.nvim',
+      'hrsh7th/cmp-nvim-lsp',
+      'williamboman/mason-lspconfig.nvim',
+    },
+  },
 
-      return {
-        automatic_installation = true,
-        ensure_installed = {},
-        handlers = {
-          lsp.default_setup,
-	},
-      }
+  {
+    'VonHeikemen/lsp-zero.nvim',
+    branch = 'v3.x',
+    event = { 'BufReadPre', 'BufNewFile' },
+    dependencies = {
+      -- LSP Support
+      {'williamboman/mason.nvim'},
+      {'williamboman/mason-lspconfig.nvim'},
+      {'neovim/nvim-lspconfig'},
+      -- Autocompletion
+      {'hrsh7th/nvim-cmp'},
+      {'hrsh7th/cmp-nvim-lsp'},
+      {'L3MON4D3/LuaSnip'},
+    },
+    -- config = false,
+    init = function()
+      -- Disable automatic setup, we are doing it manually
+      vim.g.lsp_zero_extend_cmp = 0
+      vim.g.lsp_zero_extend_lspconfig = 0
     end,
   },
 
@@ -72,27 +88,4 @@ return {
   --     automatic_setup = true,
   --   }
   -- },
-
-  {
-    'VonHeikemen/lsp-zero.nvim',
-    branch = 'v3.x',
-    event = { 'BufReadPre', 'BufNewFile' },
-    dependencies = {
-      -- LSP Support
-      {'neovim/nvim-lspconfig'},
-      {'williamboman/mason.nvim'},
-      {'williamboman/mason-lspconfig.nvim'},
-      -- Autocompletion
-      {'hrsh7th/nvim-cmp'},
-      {'hrsh7th/cmp-nvim-lsp'},
-      {'L3MON4D3/LuaSnip'},
-    },
-    lazy = true,
-    config = false,
-    init = function()
-      -- Disable automatic setup, we are doing it manually
-      vim.g.lsp_zero_extend_cmp = 0
-      vim.g.lsp_zero_extend_lspconfig = 0
-    end,
-  },
 };

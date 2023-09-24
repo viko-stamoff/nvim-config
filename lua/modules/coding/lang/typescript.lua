@@ -1,3 +1,4 @@
+if true then return {} end
 return {
   -- Syntax highlighting
   {
@@ -10,38 +11,43 @@ return {
   },
 
   -- Add LSP
+  -- {
+  --   'williamboman/mason.nvim',
+  --   opts = function(_, opts)
+  --   end,
+  -- },
+
+  -- LSP
   {
-    'williamboman/mason.nvim',
+    'williamboman/mason-lspconfig.nvim',
     opts = function(_, opts)
       if type(opts.ensure_installed) == 'table' then
-        vim.list_extend(opts.ensure_installed, { 'typescript-language-server', 'eslint_d' })
+        vim.list_extend(opts.ensure_installed, { 'tsserver' })
+      end
+
+      opts.handlers.tsserver = function()
+        require('lspconfig').tsserver.setup()
+      end
+
+      for k, v in pairs(opts.handlers) do
+	      print(k, v)
       end
     end,
   },
 
-  -- Set up lsp
-  {
-    'williamboman/mason-lspconfig.nvim',
-    opts = function(_, opts)
-      vim.list_extend(opts.handlers, { tsserver = function()
-        require('lspconfig').tsserver.setup()
-      end})
-    end,
-  },
-
   -- Linter
-  {
-    'jose-elias-alvarez/null-ls.nvim',
-    opts = function(_, opts)
-      local nls = require('null-ls')
-
-      vim.list_extend(opts.sources, {
-        nls.builtins.code_actions.eslint_d,
-        nls.builtins.code_actions.refactoring,
-        -- nls.builtins.diagnostics.semgrep
-      })
-    end,
-  },
+  -- {
+  --   'jose-elias-alvarez/null-ls.nvim',
+  --   opts = function(_, opts)
+  --     local nls = require('null-ls')
+  --
+  --     vim.list_extend(opts.sources, {
+  --       nls.builtins.code_actions.eslint_d,
+  --       nls.builtins.code_actions.refactoring,
+  --       -- nls.builtins.diagnostics.semgrep
+  --     })
+  --   end,
+  -- },
 
   -- Debugger
   -- Problematic, for some reason

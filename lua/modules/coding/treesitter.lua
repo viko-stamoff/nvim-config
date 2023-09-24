@@ -2,9 +2,6 @@
 return {
   {
     'nvim-treesitter/nvim-treesitter-textobjects',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter',
-    },
     init = function()
       require("lazy.core.loader").disable_rtp_plugin("nvim-treesitter-textobjects")
       load_textobjects = true
@@ -27,7 +24,6 @@ return {
     ---@type TSConfig
     opts = {
       ensure_installed = { 'vim' },
-      -- ensure_installed = { 'javascript', 'jsdoc', 'css', 'html', 'svelte', 'vim','c_sharp' },
       auto_install = true,
       highlight = {
         enable = true
