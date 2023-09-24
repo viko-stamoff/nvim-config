@@ -14,7 +14,10 @@ return {
       local mappings = mapping.get_defaults()
       --mappings.i['<c-p>'] = nil
       return {
-        ring = {
+        preserve_cursor_position = {
+          enabled = true,
+        },
+	ring = {
 	  storage = jit.os:find('Windows') and 'shada' or 'sqlite'
         },
         picker = {

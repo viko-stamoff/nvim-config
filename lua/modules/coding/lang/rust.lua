@@ -1,3 +1,4 @@
+if true then return {} end
 return {
   -- Extend auto completion
   {
@@ -31,7 +32,7 @@ return {
   -- Ensure Rust debugger is installed
   {
     "williamboman/mason.nvim",
-    optional = true,
+    -- optional = true,
     opts = function(_, opts)
       if type(opts.ensure_installed) == "table" then
         vim.list_extend(opts.ensure_installed, { "codelldb" })
@@ -144,7 +145,7 @@ return {
 
   {
     "nvim-neotest/neotest",
-    optional = true,
+    -- optional = true,
     dependencies = {
       "rouge8/neotest-rust",
     },

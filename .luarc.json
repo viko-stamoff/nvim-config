@@ -1,4 +1,11 @@
 {
+    "runtime.version": "LuaJIT",
+    "runtime.path": [
+      "lua/?.lua",
+      "lua/?/init.lua"
+    ],
+    "diagnostics.globals": ["vim"],
+    "workspace.checkThirdParty": false,
     "workspace.library": [
         "/home/viko/.local/share/nvim/lazy/neodev.nvim/types/stable",
         "/usr/share/nvim/runtime/lua",
@@ -28,7 +35,6 @@
         "/home/viko/.local/share/nvim/lazy/cmp_luasnip/lua",
         "/home/viko/.local/share/nvim/lazy/telescope-fzf-native.nvim/lua",
         "/home/viko/.local/share/nvim/lazy/neodev.nvim/lua",
-        "${3rd}/luv/library",
-        "${3rd}/luassert/library"
+        "./lua"
     ]
 }
