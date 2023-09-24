@@ -2,9 +2,9 @@ return {
   {
     'nvim-telescope/telescope.nvim',
     dependencies = {
-      'nvim-telescope/telescope.nvim',
       'nvim-lua/plenary.nvim',
     },
+    opts = {},
     keys = {
       { '<leader>f', desc = 'Find/File' },
       { '<leader>ff', function() require('telescope.builtin').git_files() end, desc = 'Search Git Files' },
