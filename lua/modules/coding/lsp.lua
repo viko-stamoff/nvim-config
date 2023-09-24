@@ -7,6 +7,7 @@ return {
       'folke/neodev.nvim',
       'hrsh7th/cmp-nvim-lsp'
     },
+    cmd = { 'LspInfo', 'LspInstall', 'LspStart' },
   },
 
   -- LSP Package Manager (UI)
@@ -35,10 +36,25 @@ return {
       'williamboman/mason.nvim',
       'neovim/nvim-lspconfig',
     },
-    opts = {
-      automatic_installation = true,
-      ensure_installed = {},
-    },
+    opts =  function()
+      -- This is where all the LSP shenanigans will live
+      local lsp = require('lsp-zero')
+      lsp.extend_lspconfig()
+
+      lsp.on_attach(function(_, bufnr)
+        -- see :help lsp-zero-keybindings
+        -- to learn the available actions
+        lsp.default_keymaps({buffer = bufnr})
+      end)
+
+      return {
+        automatic_installation = true,
+        ensure_installed = {},
+        handlers = {
+          lsp.default_setup,
+	},
+      }
+    end,
   },
 
   -- -- mason-nvim-dap.nvim closes some gaps that exist between mason.nvim and nvim-dap. Its main responsibilities are:
@@ -71,31 +87,12 @@ return {
       {'hrsh7th/cmp-nvim-lsp'},
       {'L3MON4D3/LuaSnip'},
     },
-    config = function()
-      local lsp = require('lsp-zero')
-
-      -- see :h lsp-zero-keybindings
-      lsp.on_attach(function(_, bufnr)
-	print('base on-attach')
-        lsp.default_keymaps({buffer = bufnr})
-      end)
+    lazy = true,
+    config = false,
+    init = function()
+      -- Disable automatic setup, we are doing it manually
+      vim.g.lsp_zero_extend_cmp = 0
+      vim.g.lsp_zero_extend_lspconfig = 0
     end,
-    keys = {
-      { 'gd', vim.lsp.buf.definition, 'n', desc = 'Goto Definition' },
-      { 'gD', vim.lsp.buf.declaration, 'n', desc = 'Goto Declaration' },
-      { 'gr', require('telescope.builtin').lsp_references, 'n', desc = 'Goto References' },
-      { 'gi', vim.lsp.buf.implementation, 'n', desc = 'Goto Implementation' },
-      { 'gp', vim.diagnostic.goto_prev, 'n', desc = 'Goto Previous' },
-      { 'gn', vim.diagnostic.goto_next, 'n', desc = 'Goto Next' },
-
-      { '<leader>ca', vim.lsp.buf.code_action, 'n', desc = 'Code Action' },
-      { '<leader>ct', vim.lsp.buf.type_definition, 'n', desc = 'Code Type Definition' },
-      { '<leader>cs', require('telescope.builtin').lsp_document_symbols, 'n', desc = 'Code Symbols' },
-      { '<leader>ck', vim.lsp.buf.signature_help, 'n', desc = 'Signature Documentation' },
-      { '<leader>cf', vim.lsp.buf.format, 'n', desc = 'Code Format' },
-      { '<leader>cr', vim.lsp.buf.rename, 'n', desc = 'Rename' },
-
-      { 'K', vim.lsp.buf.hover, 'n', desc = 'Hover Documentation' },
-    }
   },
 };

@@ -1,11 +1,8 @@
--- Typescript config
--- if true then return {} end
 return {
   -- Syntax highlighting
   {
     'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
-      print('ts-ts')
       if type(opts.ensure_installed) == 'table' then
         vim.list_extend(opts.ensure_installed, { 'typescript', 'javascript', 'tsx' })
       end
@@ -17,100 +14,34 @@ return {
     'williamboman/mason.nvim',
     opts = function(_, opts)
       if type(opts.ensure_installed) == 'table' then
-	-- Later reffered to as 'tsserver'
-        vim.list_extend(opts.ensure_installed, { 'typescript-language-server' })
+        vim.list_extend(opts.ensure_installed, { 'typescript-language-server', 'eslint_d' })
       end
     end,
   },
 
   -- Set up lsp
   {
-    'VonHeikemen/lsp-zero.nvim',
-    config = function()
-      print('ts-lsp')
-      local lsp = require('lsp-zero')
-
-      -- lsp.configure('tsserver', {
-      --   on_attach = function(client, bufnr)
-      --     print('hello tsserver')
-      --   end,
-      --   settings = {
-      --     completions = {
-      --       completeFunctionCalls = true,
-      --       workingDirectory = { mode = 'auto' },
-      --     }
-      --   }
-      -- })
-      -- require('lspconfig').tsserver.setup()
+    'williamboman/mason-lspconfig.nvim',
+    opts = function(_, opts)
+      vim.list_extend(opts.handlers, { tsserver = function()
+        require('lspconfig').tsserver.setup()
+      end})
     end,
   },
- --  {
- --    'neovim/nvim-lspconfig',
- --    opts = {
- --      -- Most likely should just use tsserver
- --      servers = {
- --        ---@type lspconfig.-- options.eslint
- --        eslint = {
- --          settings = {
- --            -- helps eslint find the eslintrc when it's placed in a subfolder instead of the cwd root
- --            workingDirectory = { mode = 'auto' },
- --          },
- --        },
- --        ---@type lspconfig.-- options.jsonls
- --        jsonls = {},
- --        ---@type lspconfig.-- options.tsserver
-	-- tsserver = {
- --          keys = {
- --            -- Autofix entire buffer with eslint_d:
- --            { '<leader>cf', 'mF:%!eslint_d --stdin --fix-to-stdout<CR>`F', mode = 'n'},
- --            -- Autofix visual selection with eslint_d:
- --            { '<leader>cf', ':!eslint_d --stdin --fix-to-stdout<CR>gv', mode = 'x'},
- --          },
- --          settings = {
- --            typescript = {
- --              format = {
- --                indentSize = vim.o.shiftwidth,
- --                convertTabsToSpaces = vim.o.expandtab,
- --                tabSize = vim.o.tabstop,
- --              },
- --            },
- --            javascript = {
- --              format = {
- --                indentSize = vim.o.shiftwidth,
- --                convertTabsToSpaces = vim.o.expandtab,
- --                tabSize = vim.o.tabstop,
- --              },
- --            },
- --            completions = {
- --              completeFunctionCalls = true,
- --            },
- --          },
- --        },
- --      },
- --      setup = {
- --        tsserver = function(_, opts)
- --          -- require('typescript').setup({ server = opts })
- --          return true
- --        end,
- --      },
- --    },
- --  },
 
   -- Linter
-  -- {
-  --   'mantoni/eslint_d.js',
-  --   dependencies = {
-  --     { 'neovim/nvim-lspconfig' },
-  --     {
-  --       'williamboman/mason.nvim',
-  --       opts = function(_, opts)
-  --         if type(opts.ensure_installed) == 'table' then
-  --           vim.list_extend(opts.ensure_installed, { 'eslint_d' })
-  --         end
-  --       end,
-  --     },
-  --   },
-  -- },
+  {
+    'jose-elias-alvarez/null-ls.nvim',
+    opts = function(_, opts)
+      local nls = require('null-ls')
+
+      vim.list_extend(opts.sources, {
+        nls.builtins.code_actions.eslint_d,
+        nls.builtins.code_actions.refactoring,
+        -- nls.builtins.diagnostics.semgrep
+      })
+    end,
+  },
 
   -- Debugger
   -- Problematic, for some reason
@@ -171,7 +102,6 @@ return {
   -- Test runner
   {
     'nvim-neotest/neotest',
-    -- optional = true,
     opts = {
       adapters = {
         ['neotest-vitest'] = {},
