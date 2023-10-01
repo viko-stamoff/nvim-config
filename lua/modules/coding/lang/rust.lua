@@ -1,5 +1,16 @@
-if true then return {} end
+-- if true then return {} end
+-- Rust lang config
 return {
+  -- Add syntax highlight
+  {
+    'nvim-treesitter/nvim-treesitter',
+    opts = function(_, opts)
+      if type(opts.ensure_installed) == 'table' then
+        vim.list_extend(opts.ensure_installed, { "ron", "rust", "toml" })
+      end
+    end,
+  },
+
   -- Extend auto completion
   {
     "hrsh7th/nvim-cmp",
@@ -16,16 +27,6 @@ return {
       opts.sources = cmp.config.sources(vim.list_extend(opts.sources, {
         { name = "crates" },
       }))
-    end,
-  },
-
-  -- Add Rust & related to treesitter
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        vim.list_extend(opts.ensure_installed, { "ron", "rust", "toml" })
-      end
     end,
   },
 

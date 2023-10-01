@@ -1,7 +1,6 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-vim.wo.relativenumber = true
 vim.o.hlsearch = false
 vim.o.mouse = 'a'
 vim.o.clipboard = 'unnamedplus'
@@ -14,10 +13,18 @@ vim.o.timeoutlen = 300
 vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 vim.o.scrolloff = 5
+
+vim.wo.relativenumber = true
 vim.wo.number = true
 vim.wo.signcolumn = 'yes'
 vim.wo.relativenumber = true
+
 vim.opt.autochdir = true
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+
+vim.bo.softtabstop = 2
 
 -- <leader> and p or d deletes the selected text, if any
 vim.keymap.set({'n', 'x'}, '<leader>d', '"_d')

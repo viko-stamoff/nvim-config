@@ -4,8 +4,7 @@ return {
     'VonHeikemen/lsp-zero.nvim',
     event = { 'BufReadPre', 'BufNewFile' },
     dependencies = {
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
+      'neovim/nvim-lspconfig',
     },
     branch = 'v3.x',
   },
@@ -31,7 +30,6 @@ return {
     'williamboman/mason-lspconfig.nvim',
     dependencies = {
       'williamboman/mason.nvim',
-      'neovim/nvim-lspconfig',
     },
     opts = {
       automatic_installation = true,
@@ -47,6 +45,45 @@ return {
       'j-hui/fidget.nvim',
       'folke/neodev.nvim',
       'hrsh7th/cmp-nvim-lsp',
+      'williamboman/mason-lspconfig.nvim',
+    },
+    config = function()
+    end,
+    opts = {
+      diagnostics = {
+        underline = true,
+        update_in_insert = false,
+        virtual_text = {
+          spacing = 4,
+          source = "if_many",
+          prefix = "●",
+        },
+        severity_sort = true,
+      },
+      inlay_hints = {
+        enabled = false,
+      },
+      -- add any global capabilities here
+      capabilities = {},
+      autoformat = true,
+      format_notify = false,
+      format = {
+        formatting_options = nil,
+        timeout_ms = nil,
+      },
+      servers = {
+        jsonls = {},
+      },
+      ---@type table<string, fun(server:string, opts:_.lspconfig.options):boolean?>
+      setup = {
+        -- example to setup with typescript.nvim
+        -- tsserver = function(_, opts)
+        --   require("typescript").setup({ server = opts })
+        --   return true
+        -- end,
+        -- Specify * to use this function as a fallback for any server
+        -- ["*"] = function(server, opts) end,
+      },
     },
   },
 }
