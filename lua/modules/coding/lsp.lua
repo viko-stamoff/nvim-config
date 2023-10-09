@@ -1,14 +1,4 @@
 return {
-  -- LSP Support
-  {
-    'VonHeikemen/lsp-zero.nvim',
-    event = { 'BufReadPre', 'BufNewFile' },
-    dependencies = {
-      'neovim/nvim-lspconfig',
-    },
-    branch = 'v3.x',
-  },
-
   -- LSP Package Manager (UI)
   {
     'williamboman/mason.nvim',
@@ -24,6 +14,16 @@ return {
       max_concurrent_installers = 8,
     },
   },
+
+  -- LSP Support
+  -- {
+  --   'VonHeikemen/lsp-zero.nvim',
+  --   event = { 'BufReadPre', 'BufNewFile' },
+  --   dependencies = {
+  --     'neovim/nvim-lspconfig',
+  --   },
+  --   branch = 'v3.x',
+  -- },
 
   -- LSP Package manager integration with LSP server
   {
@@ -41,6 +41,7 @@ return {
   -- LSP Servers Setup
   {
     'neovim/nvim-lspconfig',
+    event = { 'BufReadPre', 'BufNewFile' },
     dependencies = {
       'j-hui/fidget.nvim',
       'folke/neodev.nvim',
@@ -86,4 +87,4 @@ return {
       },
     },
   },
-}
+};

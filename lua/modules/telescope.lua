@@ -8,6 +8,7 @@ return {
     keys = {
       { '<leader>f', desc = 'Find/File' },
       { '<leader>ff', function() require('telescope.builtin').git_files() end, desc = 'Search Git Files' },
+      { '<leader>fr', function() require('telescope.builtin').oldfiles() end, desc = 'Search Recent Files' },
       { '<leader>fF', function() require('telescope.builtin').find_files() end, desc = 'Search Files' },
       { '<leader>fh', function() require('telescope.builtin').help_tags() end, desc = 'Search Help' },
 

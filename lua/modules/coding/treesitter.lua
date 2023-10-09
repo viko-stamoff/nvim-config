@@ -17,15 +17,12 @@ return {
     build = ':TSUpdate',
     event = { 'BufReadPost', 'BufRead', 'BufNewFile' },
     cmd = { 'TSUpdateSync' },
-    keys = {
-      { '<C-Space>', desc = 'Increment selection' },
-      { '<BS>', desc = 'Decrement selection', mode = 'x' }
-    },
     opts = {
       ensure_installed = { 'vim' },
-      auto_install = true,
+      auto_install = false,
       highlight = {
-        enable = true
+        enable = true,
+        additional_vim_regex_highlighting = false,
       },
       indent = {
         enable = true

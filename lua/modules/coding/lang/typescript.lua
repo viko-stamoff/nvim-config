@@ -21,11 +21,25 @@ return {
   },
 
   -- Setup LSP server
+  -- {
+  --   'VonHeikemen/lsp-zero.nvim',
+  --   opts = function()
+  --     require('lspconfig').tsserver.setup({})
+  --   end,
+  -- },
   {
-    'VonHeikemen/lsp-zero.nvim',
-    opts = function()
-      require('lspconfig').tsserver.setup({})
-    end,
+    'neovim/nvim-lspconfig',
+    opts = function(_, opts)
+      local server_config = {
+        ['tsserver'] = function(_, opts)
+          require('tsserver').setup()
+        end
+      }
+
+      if type(opts.setup) == 'table' then
+        vim.list_extend(opts.setup, server_config)
+      end
+    end
   },
 
   -- Setup inter
