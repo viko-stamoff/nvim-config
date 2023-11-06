@@ -40,6 +40,7 @@ require("lazy").setup({
 
     -- import/override with
     { import = "plugins" },
+    { import = "plugins.lang" },
   },
   defaults = {
     -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
@@ -51,7 +52,7 @@ require("lazy").setup({
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
   install = { colorscheme = { "tokyonight", "habamax" } },
-  checker = { enabled = true }, -- automatically check for plugin updates
+  checker = { enabled = false }, -- automatically check for plugin updates
   performance = {
     rtp = {
       -- disable some rtp plugins
@@ -64,6 +65,7 @@ require("lazy").setup({
         "tohtml",
         "tutor",
         "zipPlugin",
+        "mini.pairs",
       },
     },
   },
