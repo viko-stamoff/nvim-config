@@ -1,25 +1,13 @@
-# Disable, for now, as it errors out and causes multiple formats
-if true then return {}; end
-
 return {
-  {
-    "joechrisellis/lsp-format-modifications.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-  },
+  { "nvimtools/none-ls.nvim", enabled = false },
 
   {
-    "nvimtools/none-ls.nvim",
-    dependencies = {
-      "joechrisellis/lsp-format-modifications.nvim",
+    "stevearc/conform.nvim",
+    opts = {
+      format = {
+        async = true, -- Not a good idea to enable
+        lsp_fallback = true,
+      },
     },
-    opts = function(_, opts)
-      opts.on_attach = function(client, buffer)
-        require("lsp-format-modifications").attach(client, buffer, {
-          format_on_save = true,
-        })
-      end
-    end,
   },
 }

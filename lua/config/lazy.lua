@@ -9,7 +9,16 @@ vim.opt.rtp:prepend(vim.env.LAZY or lazypath)
 require("lazy").setup({
   spec = {
     -- add LazyVim and import its plugins
-    { "LazyVim/LazyVim", import = "lazyvim.plugins" },
+    {
+      "LazyVim/LazyVim",
+      dependencies = {
+        "mhartington/oceanic-next",
+      },
+      import = "lazyvim.plugins",
+      opts = {
+        colorscheme = "OceanicNext",
+      },
+    },
 
     -- Built in language support from LazyVim
     { import = "lazyvim.plugins.extras.lang.markdown" },
@@ -30,7 +39,7 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.util.project" },
 
     -- null-ls replacement
-    { import = "lazyvim.plugins.extras.lsp.none-ls" },
+    -- { import = "lazyvim.plugins.extras.lsp.none-ls" },
 
     -- Debugging
     { import = "lazyvim.plugins.extras.dap.core" },
@@ -51,7 +60,7 @@ require("lazy").setup({
     version = false, -- always use the latest git commit
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
-  install = { colorscheme = { "tokyonight", "habamax" } },
+  -- install = { colorscheme = { "tokyonight", "habamax" } },
   checker = { enabled = false }, -- automatically check for plugin updates
   performance = {
     rtp = {

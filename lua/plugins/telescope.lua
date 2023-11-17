@@ -23,6 +23,9 @@ return {
         },
         -- other layout configuration
       },
+      path_display = {
+        "truncate",
+      },
       -- other defaults configuration
     },
   },

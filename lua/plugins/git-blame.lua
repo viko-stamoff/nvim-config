@@ -1,8 +1,14 @@
 return {
-  "APZelos/blamer.nvim",
-  init = function()
-    vim.g.blamer_enabled = true
-    vim.g.blamer_delay = 100
-    vim.g.blamer_prefix = " > "
-  end,
+  {
+    "lewis6991/gitsigns.nvim",
+    opts = {
+      current_line_blame = true,
+      current_line_blame_opts = {
+        virt_text = true,
+        virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
+        delay = 100,
+        ignore_whitespace = true,
+      },
+    },
+  },
 }

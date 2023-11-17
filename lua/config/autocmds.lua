@@ -2,19 +2,34 @@
 -- Default autocmds that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/autocmds.lua
 -- Add any additional autocmds here
 
-local on_attach = function(client, bufnr)
-  -- your usual configuration — options, keymaps, etc
-  -- ...
+vim.api.nvim_create_user_command("DiffFormat", function()
+  local current_file_name = vim.api.nvim_buf_get_name(0)
+  local lines = vim.fn.system("git diff --unified=0 --no-color -- " .. current_file_name):gmatch("[^\n\r]+")
+  local ranges = {}
 
-  local augroup_id = vim.api.nvim_create_augroup("FormatModificationsDocumentFormattingGroup", { clear = false })
-  vim.api.nvim_clear_autocmds({ group = augroup_id, buffer = bufnr })
+  for line in lines do
+    if line:find("^@@") then
+      local line_nums = line:match("%+.- ")
+      if line_nums:find(",") then
+        local _, _, first, second = line_nums:find("(%d+),(%d+)")
+        table.insert(ranges, {
+          start = { tonumber(first), 0 },
+          ["end"] = { tonumber(first) + tonumber(second), 0 },
+        })
+      else
+        local first = tonumber(line_nums:match("%d+"))
+        table.insert(ranges, {
+          start = { first, 0 },
+          ["end"] = { first + 1, 0 },
+        })
+      end
+    end
+  end
 
-  vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-    group = augroup_id,
-    buffer = bufnr,
-    callback = function()
-      local lsp_format_modifications = require("lsp-format-modifications")
-      lsp_format_modifications.format_modifications(client, bufnr)
-    end,
-  })
-end
+  local conform = require("conform")
+  for _, range in pairs(ranges) do
+    conform.format({
+      range = range,
+    })
+  end
+end, { desc = "Format changed lines" })
