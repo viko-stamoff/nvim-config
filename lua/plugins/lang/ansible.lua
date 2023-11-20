@@ -4,9 +4,16 @@ vim.api.nvim_create_autocmd("FileType", {
   command = "setlocal commentstring=#\\ %s",
 })
 
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = { "*/playbooks/*.yml" },
+  desc = "ansible detect ansible file type",
+  command = "set filetype=yaml.ansible"
+})
+
 return {
   {
     "pearofducks/ansible-vim",
+    ft = "yaml.ansible"
   },
 
   {
@@ -27,16 +34,6 @@ return {
         ansiblels = {},
       },
     },
-  },
-
-  {
-    "nvimtools/none-ls.nvim",
-    opts = function(_, opts)
-      local null_ls = require("null-ls")
-      opts.sources = vim.list_extend(opts.sources or {}, {
-        null_ls.builtins.diagnostics.ansiblelint,
-      })
-    end,
   },
 
   {

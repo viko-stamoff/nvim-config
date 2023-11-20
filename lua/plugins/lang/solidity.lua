@@ -1,4 +1,5 @@
 return {
+  -- Syntax Highlighting
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -8,6 +9,7 @@ return {
     end,
   },
 
+  -- LSP Server
   {
     "williamboman/mason.nvim",
     opts = function(_, opts)
@@ -15,10 +17,14 @@ return {
       vim.list_extend(opts.ensure_installed, {
         "nomicfoundation-solidity-language-server",
         "solhint",
+        "prettier",
+        --TODO: Additionally, a plugin must also be installed for prettier:
+        -- `npm install --save-dev prettier-plugin-solidity`
       })
     end,
   },
 
+  -- LSP Server Configuration
   {
     "neovim/nvim-lspconfig",
     opts = {
@@ -28,20 +34,30 @@ return {
     },
   },
 
+
+  -- Formatter
   {
-    "nvimtools/none-ls.nvim",
-    opts = function(_, opts)
-      local nls = require("null-ls")
-      opts.sources = vim.list_extend(opts.sources or {}, {
-        nls.builtins.diagnostics.solhint,
-        nls.builtins.formatting.prettierd.with({
-          extra_filetypes = { "solidity" },
-          condition = function()
-            local util = require("lspconfig.util")
-            return util.root_pattern(".prettierrc", ".prettierrc.json")
-          end,
-        }),
-      })
-    end,
+    "stevearc/conform.nvim",
+    opts = {
+      formatters_by_ft = {
+        solidity = { "prettier" },
+      },
+      formatters = {
+        prettier = {
+          prepend_args = { "--plugin=prettier-plugin-solidity" },
+        },
+      },
+    },
   },
+
+  -- Linter
+  {
+    "mfussenegger/nvim-lint",
+    event = "LazyFile",
+    opts = {
+      linters_by_ft = {
+        solidity = { "solhint" },
+      },
+    },
+  }
 }

@@ -29,9 +29,9 @@ return {
       servers = {
         omnisharp = {
           handlers = {
-            ["textDocument/definition"] = function(...)
+            ["textDocument/definition"] = function(args)
               print("wtf")
-              return require("omnisharp_extended").handler(...)
+              return require("omnisharp_extended").handler(args)
             end,
           },
           keys = {
@@ -52,12 +52,12 @@ return {
   },
 
   {
-    "nvimtools/none-ls.nvim",
-    optional = true,
-    opts = function(_, opts)
-      local nls = require("null-ls")
-      opts.sources = opts.sources or {}
-      table.insert(opts.sources, nls.builtins.formatting.csharpier)
-    end,
+    "stevearc/conform.nvim",
+    opts = {
+      formatters_by_ft = {
+        --TODO: Not sure what the ft should be. Try these: csproj, cs, csharp, c_sharp, etc
+        csharp = { "csharpier" },
+      },
+    },
   },
 }
