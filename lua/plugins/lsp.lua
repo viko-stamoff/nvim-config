@@ -39,4 +39,10 @@ return {
       },
     },
   },
+
+  -- LSP References like in JetBrains' IDE
+  {
+    "VidocqH/lsp-lens.nvim",
+    opts = true,
+  }
 }

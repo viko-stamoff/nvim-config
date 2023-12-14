@@ -5,7 +5,8 @@
       "lua/?/init.lua"
     ],
     "diagnostics.globals": ["vim",
-        "Util"],
+        "Util",
+        "findElementWithType"],
     "workspace.checkThirdParty": false,
     "workspace.library": [
         "/home/viko/.local/share/nvim/lazy/neodev.nvim/types/stable",
