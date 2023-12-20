@@ -21,12 +21,10 @@ return {
             width = 0.65,
           },
         },
-        -- other layout configuration
       },
       path_display = {
         "truncate",
       },
-      -- other defaults configuration
     },
   },
 }

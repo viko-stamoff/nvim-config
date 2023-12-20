@@ -1,8 +1,3 @@
--- DISABLED!
--- if true then
---   return {}
--- end
-
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -17,21 +12,22 @@ return {
     "williamboman/mason.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      table.insert(opts.ensure_installed, "omnisharp")
-      -- table.insert(opts.ensure_installed, "omnisharp-mono")
+      vim.list_extend(opts.ensure_installed, { "omnisharp", "omnisharp-mono", "netcoredbg", "csharpier" })
     end,
   },
 
   {
     "neovim/nvim-lspconfig",
     ft = { "cs", "csproj", "sln" },
+    dependencies = {
+      { "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
+    },
     opts = {
       servers = {
         omnisharp = {
           handlers = {
-            ["textDocument/definition"] = function(args)
-              print("wtf")
-              return require("omnisharp_extended").handler(args)
+            ["textDocument/definition"] = function()
+              return require("omnisharp_extended").handler
             end,
           },
           keys = {
@@ -44,8 +40,10 @@ return {
             },
           },
           enable_roslyn_analyzers = true,
-          organize_imports_on_format = true,
+          organize_imports_on_format = false,
           enable_import_completion = true,
+          enable_editorconfig_support = true,
+          enable_ms_build_load_projects_on_demand = false, -- When true, it's useful for big projects, but might not yield full autocompletion
         },
       },
     },
@@ -55,8 +53,46 @@ return {
     "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = {
-        --TODO: Not sure what the ft should be. Try these: csproj, cs, csharp, c_sharp, etc
-        csharp = { "csharpier" },
+        cs = { "csharpier" },
+        csproj = { "csharpier" },
+        sln = { "csharpier" },
+      },
+      formatters = {
+        csharpier = {
+          command = "dotnet-csharpier",
+          args = { "--write-stdout" },
+        },
+      },
+    },
+  },
+
+  {
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      "theHamsta/nvim-dap-virtual-text",
+    },
+    opts = {
+      adapters = {
+        ["coreclr"] = {
+          type = "executable",
+          command = vim.fn.stdpath("data") .. "/mason/packages/netcoredbg",
+          args = { "--interpreter=vscode" },
+        },
+        -- ["netcoredbg"] = {
+        --   -- Here we can set options for neotest-go, e.g.
+        --   -- args = { "-tags=integration" }
+        --   args = {'--interpreter=vscode'}
+        -- },
+      },
+      configurations = {
+        ["cs"] = {
+          type = "coreclr",
+          name = "launch - netcoredbg",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Path to dll", vim.fn.getcwd() .. "/bin/Debug/", "file")
+          end,
+        },
       },
     },
   },

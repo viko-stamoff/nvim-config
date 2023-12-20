@@ -13,7 +13,8 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 return {
   {
     "pearofducks/ansible-vim",
-    ft = "yaml.ansible"
+    ft = "yaml.ansible",
+    opts = {}
   },
 
   {

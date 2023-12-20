@@ -23,8 +23,12 @@ vim.wo.signcolumn = "yes"
 vim.wo.relativenumber = true
 
 vim.opt.autochdir = true
+
 vim.opt.tabstop = 2
+vim.o.tabstop = 2
 vim.opt.shiftwidth = 2
+vim.o.shiftwidth = 2
 vim.opt.expandtab = true
+vim.o.expandtab = true
 
 vim.bo.softtabstop = 2

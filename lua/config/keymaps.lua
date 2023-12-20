@@ -3,9 +3,6 @@
 -- Add any additional keymaps here
 
 -- <leader> and p or d deletes the selected text, rather then replacing the selected and copying it
--- vim.keymap.set({ "n", "x" }, "<leader>d", '"_d', { desc = "Delete w/o copy" })
--- vim.keymap.set({ "n", "x" }, "<leader>p", '"_dP', { desc = "Paste w/o copy" })
--- vim.keymap.set({ "x" }, "d", '"_d', { desc = "Delete w/o copy" })
 vim.keymap.set({ "v" }, "p", '"_dP', { desc = "Paste w/o copy" })
 
 -- Center when scrolling
@@ -26,6 +23,5 @@ vim.keymap.set("n", "N", "Nzzzv")
 -- Saves changes when editing multi-line
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
--- vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 vim.keymap.set({ "n", "v" }, "k", 'v:count == 0 ? "gk" : "k"', { expr = true, silent = true })
 vim.keymap.set({ "n", "v" }, "j", 'v:count == 0 ? "gj" : "j"', { expr = true, silent = true })

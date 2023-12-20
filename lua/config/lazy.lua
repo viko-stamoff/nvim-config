@@ -20,8 +20,6 @@ require("lazy").setup({
 
     -- Languages
     { import = "lazyvim.plugins.extras.lang.rust" },
-    { import = "lazyvim.plugins.extras.lang.omnisharp" },
-    { import = "lazyvim.plugins.extras.lang.typescript" },
 
     -- Highlight patterns in text
     { import = "lazyvim.plugins.extras.util.mini-hipatterns" },
