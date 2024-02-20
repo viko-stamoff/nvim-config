@@ -38,5 +38,8 @@
         "/home/viko/.local/share/nvim/lazy/telescope-fzf-native.nvim/lua",
         "/home/viko/.local/share/nvim/lazy/neodev.nvim/lua",
         "./lua"
+    ],
+    "diagnostics.disable": [
+        "undefined-doc-name"
     ]
 }

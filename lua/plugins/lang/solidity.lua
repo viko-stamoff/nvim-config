@@ -1,3 +1,8 @@
+-- NOTE: Disabled
+if true then
+  return {}
+end
+
 --TODO: Add slither: https://github.com/crytic/slither
 --TODO: Integrate solc-select: https://github.com/crytic/solc-select
 local function findElementWithType(elements, targetType)

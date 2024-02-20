@@ -13,6 +13,9 @@ return {
             enable_close_on_slash = true,
             filetypes = { "html", "xml" },
           },
+          highlight = {
+            additional_vim_regex_highlighting = false,
+          },
         })
       end,
     },

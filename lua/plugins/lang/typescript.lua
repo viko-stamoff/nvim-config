@@ -1,61 +1,68 @@
+local treesitter = { 'typescript', 'tsx', 'svelte', 'css', 'scss' }
+local mason = {
+  'biome',
+  'prettierd',
+  'angular-language-server',
+  'emmet-language-server',
+  'js-debug-adapter',
+  'svelte-language-server',
+}
+
 return {
-  { import = "lazyvim.plugins.extras.formatting.prettier" },
-  { import = "lazyvim.plugins.extras.lang.json" },
-  { import = "lazyvim.plugins.extras.lang.tailwind" },
+  { import = 'lazyvim.plugins.extras.lang.json' },
+  { import = 'lazyvim.plugins.extras.lang.tailwind' },
 
   {
-    "nvim-treesitter/nvim-treesitter",
+    'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        vim.list_extend(opts.ensure_installed, { "typescript", "tsx" })
+      if type(opts.ensure_installed) == 'table' then
+        vim.list_extend(opts.ensure_installed, treesitter)
       end
     end,
   },
 
   {
-    "williamboman/mason.nvim",
+    'williamboman/mason.nvim',
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(
-        opts.ensure_installed,
-        { "biome", "angular-language-server", "emmet-language-server", "js-debug-adapter" }
-      )
+      vim.list_extend(opts.ensure_installed, mason)
     end,
   },
 
   {
-    "neovim/nvim-lspconfig",
+    'neovim/nvim-lspconfig',
     opts = {
       servers = {
-        ---@diagnostic disable-next-line: undefined-doc-name
-        ---@type lspconfig.options.tsserver
+        biome = {},
+        angularls = {},
+        svelte = {},
         tsserver = {
           keys = {
             {
-              "<leader>co",
+              '<leader>co',
               function()
-                vim.lsp.buf.code_action({
+                vim.lsp.buf.code_action {
                   apply = true,
                   context = {
-                    only = { "source.organizeImports.ts" },
+                    only = { 'source.organizeImports.ts' },
                     diagnostics = {},
                   },
-                })
+                }
               end,
-              desc = "Organize Imports",
+              desc = 'Organize Imports',
             },
             {
-              "<leader>cR",
+              '<leader>cR',
               function()
-                vim.lsp.buf.code_action({
+                vim.lsp.buf.code_action {
                   apply = true,
                   context = {
-                    only = { "source.removeUnused.ts" },
+                    only = { 'source.removeUnused.ts' },
                     diagnostics = {},
                   },
-                })
+                }
               end,
-              desc = "Remove Unused Imports",
+              desc = 'Remove Unused Imports',
             },
           },
           settings = {
@@ -76,73 +83,74 @@ return {
             completions = {
               completeFunctionCalls = true,
             },
+            implicitProjectConfiguration = {
+              checkJs = true,
+            },
           },
         },
-        biome = {},
-        angularls = {}
       },
     },
   },
 
   {
-    "stevearc/conform.nvim",
+    'stevearc/conform.nvim',
     opts = {
       formatters_by_ft = {
-        ["javascript"] = { { "biome", "prettier" } },
-        ["javascriptreact"] = { { "biome", "prettier" } },
-        ["typescript"] = { { "biome", "prettier" } },
-        ["typescriptreact"] = { { "biome", "prettier" } },
-        ["vue"] = { { "biome", "prettier" } },
-        ["css"] = { "prettier" },
-        ["scss"] = { "prettier" },
-        ["less"] = { "prettier" },
-        ["html"] = { { "biome", "prettier" } },
-        ["json"] = { { "biome", "prettier" } },
-        ["jsonc"] = { { "biome", "prettier" } },
-        ["yaml"] = { { "biome", "prettier" } },
+        ['javascript'] = { { 'biome', 'prettierd' } },
+        ['javascriptreact'] = { { 'biome', 'prettierd' } },
+        ['typescript'] = { { 'biome', 'prettierd' } },
+        ['typescriptreact'] = { { 'biome', 'prettierd' } },
+        ['vue'] = { { 'biome', 'prettierd' } },
+        ['css'] = { { 'biome', 'prettierd' } },
+        ['scss'] = { 'prettierd' },
+        ['less'] = { 'prettierd' },
+        ['html'] = { { 'biome', 'prettierd' } },
+        ['json'] = { { 'biome', 'prettierd' } },
+        ['jsonc'] = { { 'biome', 'prettierd' } },
+        ['yaml'] = { { 'biome', 'prettierd' } },
+        ['svelte'] = { 'prettierd' }, -- Biome doesn't support svelte yet
       },
     },
   },
 
   {
-    "mfussenegger/nvim-dap",
+    'mfussenegger/nvim-dap',
     dependencies = {
-      "williamboman/mason.nvim",
+      'williamboman/mason.nvim',
     },
     opts = function()
-      local dap = require("dap")
-      if not dap.adapters["pwa-node"] then
-        require("dap").adapters["pwa-node"] = {
-          type = "server",
-          host = "localhost",
-          port = "${port}",
+      local dap = require 'dap'
+      if not dap.adapters['pwa-node'] then
+        require('dap').adapters['pwa-node'] = {
+          type = 'server',
+          host = 'localhost',
+          port = '${port}',
           executable = {
-            command = "node",
+            command = 'node',
             -- 💀 Make sure to update this path to point to your installation
             args = {
-              require("mason-registry").get_package("js-debug-adapter"):get_install_path()
-                .. "/js-debug/src/dapDebugServer.js",
-              "${port}",
+              require('mason-registry').get_package('js-debug-adapter'):get_install_path() .. '/js-debug/src/dapDebugServer.js',
+              '${port}',
             },
           },
         }
       end
-      for _, language in ipairs({ "typescript", "javascript", "typescriptreact", "javascriptreact" }) do
+      for _, language in ipairs { 'typescript', 'javascript', 'typescriptreact', 'javascriptreact' } do
         if not dap.configurations[language] then
           dap.configurations[language] = {
             {
-              type = "pwa-node",
-              request = "launch",
-              name = "Launch file",
-              program = "${file}",
-              cwd = "${workspaceFolder}",
+              type = 'pwa-node',
+              request = 'launch',
+              name = 'Launch file',
+              program = '${file}',
+              cwd = '${workspaceFolder}',
             },
             {
-              type = "pwa-node",
-              request = "attach",
-              name = "Attach",
-              processId = require("dap.utils").pick_process,
-              cwd = "${workspaceFolder}",
+              type = 'pwa-node',
+              request = 'attach',
+              name = 'Attach',
+              processId = require('dap.utils').pick_process,
+              cwd = '${workspaceFolder}',
             },
           }
         end

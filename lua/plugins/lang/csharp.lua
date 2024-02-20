@@ -1,3 +1,8 @@
+-- NOTE: Disabled
+if true then
+  return {}
+end
+
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -16,9 +21,12 @@ return {
     end,
   },
 
+  -- { "jmederosalvarado/roslyn.nvim", opts = {} },
+
   {
     "neovim/nvim-lspconfig",
-    ft = { "cs", "csproj", "sln" },
+    lazy = true,
+    ft = { "cs", "csproj", "sln", "razor" },
     dependencies = {
       { "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
     },

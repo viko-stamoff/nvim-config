@@ -32,3 +32,15 @@ vim.opt.expandtab = true
 vim.o.expandtab = true
 
 vim.bo.softtabstop = 2
+
+vim.filetype.add({
+  extension = {
+    pcss = 'css'
+  },
+  filename = {
+    ['.pcss'] = 'css' 
+  },
+  pattern = {
+    ['*.pcss'] = 'css' 
+  }
+})

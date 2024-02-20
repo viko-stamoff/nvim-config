@@ -1,3 +1,8 @@
+-- NOTE: Disabled
+if true then
+  return {}
+end
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "yaml.ansible" },
   desc = "ansible commentstring configuration",

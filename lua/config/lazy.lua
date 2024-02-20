@@ -14,35 +14,19 @@ require("lazy").setup({
       import = "lazyvim.plugins",
     },
 
-    -- Built in language support from LazyVim
-    { import = "lazyvim.plugins.extras.lang.markdown" },
-    { import = "lazyvim.plugins.extras.lang.json" },
-
-    -- Languages
-    { import = "lazyvim.plugins.extras.lang.rust" },
-
-    -- Highlight patterns in text
-    { import = "lazyvim.plugins.extras.util.mini-hipatterns" },
-
-    -- Project management
-    { import = "lazyvim.plugins.extras.util.project" },
-
-    -- Debugging
-    { import = "lazyvim.plugins.extras.dap.core" },
-
-    -- Testing adaptors
-    { import = "lazyvim.plugins.extras.test.core" },
-
     -- import/override with
     { import = "plugins" },
     { import = "plugins.lang" },
   },
   defaults = {
-    lazy = false,
+    lazy = true,
     version = false, -- always use the latest git commit
   },
   checker = { enabled = false },
   performance = {
+    cache = {
+      enabled = true,
+    },
     rtp = {
       disabled_plugins = {
         "gzip",
@@ -54,6 +38,14 @@ require("lazy").setup({
         "tutor",
         "zipPlugin",
       },
+    },
+    -- For debugging issues
+    profiling = {
+      -- Enables extra stats on the debug tab related to the loader cache.
+      -- Additionally gathers stats about all package.loaders
+      loader = false,
+      -- Track each new require in the Lazy profiling tab
+      require = false,
     },
   },
 })
