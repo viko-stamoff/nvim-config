@@ -58,6 +58,7 @@ return {
   -- Nicer Markdown look
   {
     'lukas-reineke/headlines.nvim',
+    event = "VeryLazy",
     opts = function()
       local opts = {}
       for _, ft in ipairs { 'markdown', 'norg', 'rmd', 'org' } do
@@ -81,4 +82,13 @@ return {
       end)
     end,
   },
+
+  -- Tables
+  {
+    'dhruvasagar/vim-table-mode',
+    ft = "markdown",
+    keys = {
+      {"<leader>ct", "<cmd>TableModeToggle<cr>", desc = "Toggle Table Mode" }
+    }
+  }
 }
