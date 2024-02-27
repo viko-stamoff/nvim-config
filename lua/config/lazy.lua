@@ -22,9 +22,12 @@ require('lazy').setup {
     lazy = true,
     version = false, -- always use the latest git commit
   },
-  checker = { enabled = true, notify = false },
-  ui = { border = 'rounded' },
+  -- colorscheme = { 'catppuccin' }, -- Unneeded, since LazyVim loads the colorscheme
+  checker = { enabled = false, notify = false },
   debug = false,
+  diff = {
+    cmd = 'diffview.nvim',
+  },
   performance = {
     cache = {
       enabled = true,

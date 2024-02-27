@@ -1,4 +1,4 @@
-local treesitter = { 'typescript', 'tsx', 'svelte', 'css', 'scss' }
+local treesitter = { 'typescript', 'tsx', 'svelte' }
 local mason = {
   'biome',
   'prettierd',
@@ -9,9 +9,6 @@ local mason = {
 }
 
 return {
-  { import = 'lazyvim.plugins.extras.lang.json' },
-  { import = 'lazyvim.plugins.extras.lang.tailwind' },
-
   {
     'nvim-treesitter/nvim-treesitter',
     opts = function(_, opts)
@@ -92,6 +89,7 @@ return {
     },
   },
 
+  -- Formatter
   {
     'stevearc/conform.nvim',
     opts = {
@@ -101,13 +99,6 @@ return {
         ['typescript'] = { { 'biome', 'prettierd' } },
         ['typescriptreact'] = { { 'biome', 'prettierd' } },
         ['vue'] = { { 'biome', 'prettierd' } },
-        ['css'] = { { 'biome', 'prettierd' } },
-        ['scss'] = { 'prettierd' },
-        ['less'] = { 'prettierd' },
-        ['html'] = { { 'biome', 'prettierd' } },
-        ['json'] = { { 'biome', 'prettierd' } },
-        ['jsonc'] = { { 'biome', 'prettierd' } },
-        ['yaml'] = { { 'biome', 'prettierd' } },
         ['svelte'] = { 'prettierd' }, -- Biome doesn't support svelte yet
       },
     },

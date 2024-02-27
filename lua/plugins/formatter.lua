@@ -32,29 +32,34 @@
 
 return {
   {
-    "stevearc/conform.nvim",
+    'stevearc/conform.nvim',
+    event = { 'VeryLazy', 'BufWritePre' },
     opts = {
       format = {
-        async = true, -- Not a good idea to enable
+        async = true,
         lsp_fallback = true,
       },
     },
+    init = function()
+      -- If you want the formatexpr, here is the place to set it
+      vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+    end, -- Not a good idea to enable
     keys = {
       {
-        "<leader>cF",
+        '<leader>cF',
         function()
-          local start_pos = vim.fn.getpos("v")
-          local end_pos = vim.fn.getpos(".")
+          local start_pos = vim.fn.getpos 'v'
+          local end_pos = vim.fn.getpos '.'
 
           local range = {
             start = { start_pos[1], 0 },
-            ["end"] = { end_pos[1] + 1, 0 },
+            ['end'] = { end_pos[1] + 1, 0 },
           }
 
-          require("conform").format({ async = true, lsp_fallback = true, range = range })
+          require('conform').format { async = true, lsp_fallback = true, range = range }
         end,
-        mode = { "x", "v" },
-        desc = "Format in selection",
+        mode = { 'x', 'v' },
+        desc = 'Format in selection',
       },
     },
   },

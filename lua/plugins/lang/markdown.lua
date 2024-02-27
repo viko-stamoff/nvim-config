@@ -3,6 +3,10 @@
 --   return {}
 -- end
 
+local markdown_files = {
+  'markdown', 'norg', 'rmd', 'org'
+}
+
 return {
   -- Hightlighting support
   {
@@ -61,7 +65,7 @@ return {
     event = "VeryLazy",
     opts = function()
       local opts = {}
-      for _, ft in ipairs { 'markdown', 'norg', 'rmd', 'org' } do
+      for _, ft in ipairs(markdown_files) do
         opts[ft] = {
           headline_highlights = {},
         }
@@ -73,7 +77,7 @@ return {
       end
       return opts
     end,
-    ft = { 'markdown', 'norg', 'rmd', 'org' },
+    ft = markdown_files,
     config = function(_, opts)
       -- PERF: schedule to prevent headlines slowing down opening a file
       vim.schedule(function()
@@ -86,9 +90,10 @@ return {
   -- Tables
   {
     'dhruvasagar/vim-table-mode',
-    ft = "markdown",
+    event = { "VeryLazy" },
+    ft = markdown_files,
     keys = {
-      {"<leader>ct", "<cmd>TableModeToggle<cr>", desc = "Toggle Table Mode" }
+      { "<leader>ct", "<cmd>TableModeToggle<cr>", desc = "Toggle Table Mode" }
     }
   }
 }
